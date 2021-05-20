@@ -14,7 +14,7 @@ class ContactList extends Component {
     }
 
     componentDidMount() {
-        axios.get('/users')
+        axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users')
             .then(response => this.setState({users: response.data}))
             .catch(error => console.log(error, 1))
     }
@@ -51,7 +51,7 @@ class ContactList extends Component {
                             let data = new URLSearchParams();
                             data.append('receiver', user.id);
                             data.append('sender', window.user);
-                            axios.post('/create-chat/', data)
+                            axios.post(window.location.protocol + '//' + window.location.hostname + ':8000/create-chat/', data)
                                 .then(response => {
                                     console.log(response)
                                     this.props.updateMainChat(response.data)

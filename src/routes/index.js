@@ -104,7 +104,7 @@ import PagesMaintenance from "../pages/ExtraPages/PagesMaintenance";
 import PagesComingsoon from "../pages/ExtraPages/PagesComingsoon";
 
 // Chat Pages
-import Chat from "../pages/Chat/Chat";
+import Chat from "../pages/Chat/index";
 
 
 const authProtectedRoutes = [

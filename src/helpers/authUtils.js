@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 // Add the Firebase products that you want to use
 import "firebase/auth";
 import "firebase/firestore";
+import axios from 'axios';
 
 class FirebaseAuthBackend {
   constructor(firebaseConfig) {
@@ -54,11 +55,12 @@ class FirebaseAuthBackend {
       .then( 
         res=>  {  
           console.log("res = ", res)        ;
-          if( res.key)
+          if( res.key) {
             if(res.group.indexOf("Agent") !== -1){
               resolve(
                 sessionStorage.setItem("authUser", JSON.stringify(res.key)),
                 sessionStorage.setItem('authName', JSON.stringify(res.authName)),
+                sessionStorage.setItem('username', JSON.stringify(res.username)),
                 sessionStorage.setItem('authId', JSON.stringify(res.id)),
                 sessionStorage.setItem('access', 'agent')
               );
@@ -66,13 +68,16 @@ class FirebaseAuthBackend {
               resolve(
                 sessionStorage.setItem("authUser", JSON.stringify(res.key)),
                 sessionStorage.setItem('authName', JSON.stringify(res.authName)),
+                sessionStorage.setItem('username', JSON.stringify(res.username)),
                 sessionStorage.setItem('authId', JSON.stringify(res.id)),
                 sessionStorage.setItem('access', 'superuser')
               );
             } else {
               reject("Unauthorized access!"); 
             }
-          else 
+            // axios.defaults.params = {}
+            // axios.defaults.params['user'] = JSON.stringify(res.authName);
+          } else 
             reject(res.non_field_errors[0]);
         },
         error => {
