@@ -57,7 +57,7 @@ class FirebaseAuthBackend {
           console.log("res = ", res)        ;
           if( res.key) {
             if(res.group.indexOf("Agent") !== -1){
-              resolve(
+              resolve(                
                 sessionStorage.setItem("authUser", JSON.stringify(res.key)),
                 sessionStorage.setItem('authName', JSON.stringify(res.authName)),
                 sessionStorage.setItem('username', JSON.stringify(res.username)),

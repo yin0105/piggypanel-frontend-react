@@ -4,6 +4,7 @@ import forge from 'node-forge';
 import Message from './Message';
 import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
+import { removeQuotes } from '../../assets/js/chatMain';
 
 
 class Chat extends Component {
@@ -22,7 +23,13 @@ class Chat extends Component {
         };
     }
 
+    headers = { 
+        'Authorization': 'token ' + removeQuotes(sessionStorage.getItem('authUser')),
+    }
+
     componentDidMount() {
+        console.log("Chat :: componentDidMount()");
+        console.log("token: ", this.headers);
         this.setupWebsocket();
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
@@ -30,6 +37,7 @@ class Chat extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("Chat :: componentWillReceiveProps() ", nextProps);
         if (nextProps.chat) {
             this.setState({
                 chat: nextProps.chat
@@ -46,16 +54,19 @@ class Chat extends Component {
     }
 
     componentDidUpdate() {
+        console.log("Chat :: componentDidUpdate()");
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
         }
     }
 
     componentWillUnmount() {
+        console.log("Chat :: componentWillUnmount()");
         this.state.ws.close();
     }
 
     setupWebsocket() {
+        console.log("Chat :: setupWebsocket()");
         let websocket = this.state.socket;
         try {
             websocket.onopen = () => {
@@ -88,6 +99,7 @@ class Chat extends Component {
     }
 
     rsaEncrypt(text) {
+        console.log("Chat :: rsaEncrypt()");
         console.log("publicKey = ", this.state.publicKey);
         let encryptedMessage = this.state.publicKey.encrypt(text, "RSA-OAEP", {
             md: forge.md.sha256.create(),
@@ -100,13 +112,14 @@ class Chat extends Component {
             command: 'send',
             chat: this.state.chat.id,
             message: messageBase64,
-            user: window.user,
+            user: sessionStorage.getItem("authId"),
             type: this.state.type
         };
         this.state.opened && this.state.socket.send(JSON.stringify(message));
     }
 
     aesEncrypt(text) {
+        console.log("Chat :: aesEncrypt()");
         var key = CryptoJS.enc.Utf8.parse('1234567890123456');
         var iv = CryptoJS.enc.Utf8.parse('this is a passph');
         
@@ -117,14 +130,15 @@ class Chat extends Component {
             command: 'send',
             chat: this.state.chat.id,
             message: encrypted_text,
-            user: window.user,
+            user: sessionStorage.getItem('authId'),
             type: this.state.type
         };
         this.state.opened && this.state.socket.send(JSON.stringify(message));
     }
 
     render() {
-        const user = window.user;
+        console.log("Chat :: render()");
+        const user = sessionStorage.getItem('authId');
         const chat = this.props.chat;
         let messages = '';
         if (this.state.chat.id === 0) {
@@ -140,32 +154,32 @@ class Chat extends Component {
         }
 
         return (
-            <div className="col-sm-8 conversation">
-                <div className="row heading">
-                    <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar">
-                        <div className="heading-avatar-icon">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="avatar" />
+            <div className="col-sm-8 conversation msg">
+                <div className="row heading msg">
+                    <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
+                        <div className="heading-avatar-icon msg">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="avatar" className="msg" />
                         </div>
                     </div>
-                    <div className="col-sm-8 col-xs-7 heading-name">
-                        <a className="heading-name-meta">
-                            <span className="name-meta">
-                                {!chat ? '' : chat.users[0].id != window.user ? chat.users[0].username : chat.users[1].username }
+                    <div className="col-sm-8 col-xs-7 heading-name msg">
+                        <a className="heading-name-meta msg">
+                            <span className="name-meta msg">
+                                {!chat ? '' : chat.users[0].id != sessionStorage.getItem('authId') ? chat.users[0].username : chat.users[1].username }
                             </span>
                         </a>
-                        <span className="heading-online">Online</span>
+                        <span className="heading-online msg">Online</span>
                     </div>
-                    <div className="col-sm-1 col-xs-1  heading-dot pull-right">
-                        <i className="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+                    <div className="col-sm-1 col-xs-1  heading-dot pull-right msg">
+                        <i className="fa fa-ellipsis-v fa-2x  pull-right msg" aria-hidden="true"></i>
                     </div>
                 </div>
-                <div className="row message" id="conversation" ref={messages => {this.messagesDiv = messages;}}>
+                <div className="row message msg" id="conversation" ref={messages => {this.messagesDiv = messages;}}>
                     <br />
                     {messages}
                 </div>
 
-                <div className="row reply">
-                    <div className="col-sm-1 col-xs-1 reply-emojis" onClick={() => {
+                <div className="row reply msg">
+                    <div className="col-sm-1 col-xs-1 reply-emojis msg" onClick={() => {
                         if (this.state.type === 'rsa') {
                             this.setState({type: 'aes'});
                         } else {
@@ -173,15 +187,15 @@ class Chat extends Component {
                         }
                         console.log(this.state.type);
                     }}>
-                        <i className="fa fa-smile-o fa-2x"></i>
+                        <i className="fa fa-smile-o fa-2x msg"></i>
                     </div>
-                    <div className="col-sm-9 col-xs-9 reply-main">
+                    <div className="col-sm-9 col-xs-9 reply-main msg">
                         <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }}></textarea>
                     </div>
                     <div className="col-sm-1 col-xs-1 reply-recording">
-                        <i className="fa fa-microphone fa-2x" aria-hidden="true"></i>
+                        <i className="fa fa-microphone fa-2x msg" aria-hidden="true"></i>
                     </div>
-                    <div className="col-sm-1 col-xs-1 reply-send" onClick={() => {
+                    <div className="col-sm-1 col-xs-1 reply-send msg" onClick={() => {
                         let type = this.state.type;
                         let text = this.messageText.value;
                         console.log(text);
@@ -192,7 +206,7 @@ class Chat extends Component {
                         }
                         $('#comment').val('');
                     }}>
-                        <i className="fa fa-send fa-2x" aria-hidden="true"></i>
+                        <i className="fa fa-paper-plane fa-2x msg" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
