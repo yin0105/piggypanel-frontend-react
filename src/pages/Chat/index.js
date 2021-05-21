@@ -47,7 +47,7 @@ class ChatMain extends Component {
   }
   
   render() {
-    return <div className="row app-one msg m-3"> 
+    return <div className="app-one msg m-3"> 
             <div key={1} className="col-sm-4 side msg">
               <ChatList chats={this.state.chats} updateMainChat={chat => this.setState({mainChat: chat})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
               <ContactList className="msg" updateMainChat={chat => {

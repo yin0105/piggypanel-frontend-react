@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import { removeQuotes } from '../../assets/js/chatMain';
+import '../../assets/css/chat-room.css';
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";

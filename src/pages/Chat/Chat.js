@@ -5,6 +5,7 @@ import Message from './Message';
 import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 import { removeQuotes } from '../../assets/js/chatMain';
+import '../../assets/css/chat-room.css';
 
 
 class Chat extends Component {
@@ -46,6 +47,7 @@ class Chat extends Component {
             let message = {
                 command: 'join',
                 chat: nextProps.chat.id,
+                user: removeQuotes(sessionStorage.getItem("authId")),
             };
             console.log("=== message = ", message);
             this.state.opened && this.state.socket.send(JSON.stringify(message));
@@ -80,14 +82,14 @@ class Chat extends Component {
         websocket.onmessage = (evt) => {
             let data = JSON.parse(evt.data)
             if ('key' in data) {
-                console.log(data)
+                console.log("== OnMessage() =>", data)
                 this.setState({
                     publicKey: forge.pki.publicKeyFromPem(data.key)
                 });
             }
             else if ('message' in data) {
                 let conversation = this.state.chat.messages;
-                console.log(data.message)
+                console.log("new message = ", data.message);
                 conversation.push(data.message)
                 this.setState({messages: conversation});
             }
@@ -112,7 +114,7 @@ class Chat extends Component {
             command: 'send',
             chat: this.state.chat.id,
             message: messageBase64,
-            user: sessionStorage.getItem("authId"),
+            user: removeQuotes(sessionStorage.getItem("authId")),
             type: this.state.type
         };
         this.state.opened && this.state.socket.send(JSON.stringify(message));
@@ -139,18 +141,19 @@ class Chat extends Component {
     render() {
         console.log("Chat :: render()");
         const user = sessionStorage.getItem('authId');
+        console.log("== user = ", user);
         const chat = this.props.chat;
         let messages = '';
         if (this.state.chat.id === 0) {
             return <div className="col-sm-8 conversation"></div>
         }
         if (chat) {
-            messages = chat.messages.map(message => <Message 
+            messages = chat.messages.map(message =>{ console.log("#", user, "#", message.sender.id + "#", typeof(user), typeof(message.sender.id)); return <Message 
                 key={message.id} 
-                classType={message.sender.id !== user ? 'receiver' : 'sender'} 
+                classType={message.sender.id != user ? 'receiver' : 'sender'} 
                 text={message.text} 
                 date_sent={message.diff_time} 
-            />);
+            />});
         }
 
         return (
@@ -173,7 +176,7 @@ class Chat extends Component {
                         <i className="fa fa-ellipsis-v fa-2x  pull-right msg" aria-hidden="true"></i>
                     </div>
                 </div>
-                <div className="row message msg" id="conversation" ref={messages => {this.messagesDiv = messages;}}>
+                <div className="message msg" id="conversation" ref={messages => {this.messagesDiv = messages;}}>
                     <br />
                     {messages}
                 </div>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { removeQuotes } from '../../assets/js/chatMain';
+import '../../assets/css/chat-room.css';
 
 class ChatList extends Component {
     headers = { 
