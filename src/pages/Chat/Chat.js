@@ -73,7 +73,14 @@ class Chat extends Component {
         try {
             websocket.onopen = () => {
                 this.setState({opened: true});
-                console.log('::: open')
+                console.log('::: open');
+                let message = {
+                    command: 'prejoin',
+                    chat: this.state.chat.id,
+                    group: 'admin',
+                    user: removeQuotes(sessionStorage.getItem("authId")),
+                };
+                this.state.opened && this.state.socket.send(JSON.stringify(message));
             };
         } catch (e) {
             console.log("== socket open error: ", e)
@@ -86,12 +93,24 @@ class Chat extends Component {
                 this.setState({
                     publicKey: forge.pki.publicKeyFromPem(data.key)
                 });
+            } else if ('prejoin' in data) {
+                console.log(" == prejoin ");
             }
-            else if ('message' in data) {
-                let conversation = this.state.chat.messages;
+            else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
+                let sender = data.receiver.split("_")[1];
                 console.log("new message = ", data.message);
-                conversation.push(data.message)
-                this.setState({messages: conversation});
+                console.log("receiver = ", data.receiver);
+                console.log("sender = ", sender);
+                console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
+                console.log("oppo = ", this.props.user);
+                
+                if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
+                    let conversation = this.state.chat.messages;
+                    conversation.push(data.message)
+                    this.setState({messages: conversation});
+                } else {
+                    console.log("== not seeing");
+                }
             }
         };
     
@@ -113,7 +132,8 @@ class Chat extends Component {
         let message = {
             command: 'send',
             chat: this.state.chat.id,
-            message: messageBase64,
+            message: text,
+            // message: messageBase64,
             user: removeQuotes(sessionStorage.getItem("authId")),
             type: this.state.type
         };

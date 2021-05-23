@@ -7,13 +7,15 @@ import Layout from "./layout/reducer";
 import Login from "./auth/login/reducer";
 import Account from "./auth/register/reducer";
 import ForgetPassword from "./auth/forgetpwd/reducer";
+import Notification from "./notification/reducer";
 
 const rootReducer = combineReducers({
   // public
   Layout,
   Login,
   Account,
-  ForgetPassword
+  ForgetPassword,
+  Notification
 });
 
 export default rootReducer;

@@ -55,7 +55,7 @@ class ContactList extends Component {
                     </div>
                 </div>
 
-                <div className="row compose-sideBar msg">
+                <div className="compose-sideBar msg">
                     { this.state.users.map(user => 
                         <div key={user.id} className="row sideBar-body msg" onClick={() => {
                             let data = new URLSearchParams();

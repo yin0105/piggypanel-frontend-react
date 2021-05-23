@@ -27,6 +27,8 @@ import SparkLine1 from "../AllCharts/sparkline/sparkline1";
 import Salesdonut from "../AllCharts/apex/salesdonut";
 
 import "chartist/dist/scss/chartist.scss";
+import { connect } from "react-redux";
+import { Redirect } from 'react-router-dom';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -35,32 +37,43 @@ class Dashboard extends Component {
   }
 
   render() {
-    return (
-      <React.Fragment>
-        <div className="container-fluid">
-          <Row className="align-items-center">
-            <Col sm={6}>
-              <div className="page-title-box">
-                <h4 className="font-size-18">Dashboard</h4>
-                {/*}
-                <ol className="breadcrumb mb-0">
-                  <li className="breadcrumb-item active">
-                    Welcome to Piggy Panel!
-                  </li>
-                </ol>
-                */}
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12}>
-              <h1>Welcome to Pepe's Piggy Panel</h1>
-            </Col>
-          </Row>
-        </div>
-      </React.Fragment>
-    );
+    console.log("opened = ", this.props.opened);
+    if (this.props.opened) {
+      return (
+        <Redirect to='/chat'/>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          <div className="container-fluid">
+            <Row className="align-items-center">
+              <Col sm={6}>
+                <div className="page-title-box">
+                  <h4 className="font-size-18">Dashboard</h4>
+                  {/*}
+                  <ol className="breadcrumb mb-0">
+                    <li className="breadcrumb-item active">
+                      Welcome to Piggy Panel!
+                    </li>
+                  </ol>
+                  */}
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <h1>Welcome to Pepe's Piggy Panel</h1>
+              </Col>
+            </Row>
+          </div>
+        </React.Fragment>
+      );
+    }
   }
 }
 
-export default Dashboard;
+const mapStatetoProps = state => ({
+  opened: state.opened,
+})
+
+export default connect(mapStatetoProps, null)(Dashboard);

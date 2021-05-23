@@ -19,6 +19,8 @@ import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import { textFilter, numberFilter, Comparator, selectFilter } from 'react-bootstrap-table2-filter';
 
 import moment from 'moment';
+import { connect } from "react-redux";
+import { Redirect } from 'react-router-dom';
 
 const RemoteAll = ({ columns, data, page, sizePerPage, defaultSorted, onTableChange, totalSize, selectRow, rowStyle }) => (
     <PaginationProvider
@@ -557,66 +559,78 @@ class Contacts extends Component{
       return style;
     };
 
-    return (
-      <React.Fragment>
-        <div className="container-fluid">
-          {/*}
-          <Row className="align-items-center">
-            <Col sm={6}>
-              <div className="page-title-box">
-                <h4 className="font-size-18">Contacts</h4>
-                <ol className="breadcrumb mb-0">
-                  <li className="breadcrumb-item">
-                    <Link to="/#">Dashboard</Link>
-                  </li>
-                  <li className="breadcrumb-item active">Contacts</li>
-                </ol>
-              </div>
-            </Col>
-          </Row>
-    */}
-          <div className="row">
-            <div className="col-12">
-              <div className="card">
-                <div className="card-body">
-                      {showDelAlert ? 
-                      <Alert
-                        color="success"
-                        toggle={() =>
-                          this.setState({ showDelAlert: !this.state.showDelAlert })
-                        }
-                      >
-                        <strong>{totaldeleted}</strong> records succesfully deleted.
-                      </Alert> : ''}
-                      {superuser ?
-                      <div className="mb-1">
-                      {selected.length > 0 ? <Button color="danger" className="btn btn-danger waves-effect waves-light" onClick={this.deleteSelected}>Delete Selected</Button>:<Button color="danger" disabled outline className="waves-effect waves-light">Delete Selected</Button>}
-                      </div>
-                      :''}
-                      {
-                          (isLayoutLoaded && isDataLoaded) ?
-                                <RemoteAll
-                                columns = { columns }
-                                data={ this.state.items }
-                                page={ page }
-                                sizePerPage={ sizePerPage }
-                                totalSize={ this.state.totalSize }
-                                onTableChange={ this.handleTableChange }
-                                selectRow={ selectRow }
-                                rowStyle={ rowStyle }
-                                /> :
-                              'Waiting' // or whatever loading state you want, could be null
-                      }             
+    console.log("opened = ", this.props.opened);
+    if (this.props.opened) {
+      return (
+        <Redirect to='/chat'/>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          <div className="container-fluid">
+            {/*}
+            <Row className="align-items-center">
+              <Col sm={6}>
+                <div className="page-title-box">
+                  <h4 className="font-size-18">Contacts</h4>
+                  <ol className="breadcrumb mb-0">
+                    <li className="breadcrumb-item">
+                      <Link to="/#">Dashboard</Link>
+                    </li>
+                    <li className="breadcrumb-item active">Contacts</li>
+                  </ol>
+                </div>
+              </Col>
+            </Row>
+      */}
+            <div className="row">
+              <div className="col-12">
+                <div className="card">
+                  <div className="card-body">
+                        {showDelAlert ? 
+                        <Alert
+                          color="success"
+                          toggle={() =>
+                            this.setState({ showDelAlert: !this.state.showDelAlert })
+                          }
+                        >
+                          <strong>{totaldeleted}</strong> records succesfully deleted.
+                        </Alert> : ''}
+                        {superuser ?
+                        <div className="mb-1">
+                        {selected.length > 0 ? <Button color="danger" className="btn btn-danger waves-effect waves-light" onClick={this.deleteSelected}>Delete Selected</Button>:<Button color="danger" disabled outline className="waves-effect waves-light">Delete Selected</Button>}
+                        </div>
+                        :''}
+                        {
+                            (isLayoutLoaded && isDataLoaded) ?
+                                  <RemoteAll
+                                  columns = { columns }
+                                  data={ this.state.items }
+                                  page={ page }
+                                  sizePerPage={ sizePerPage }
+                                  totalSize={ this.state.totalSize }
+                                  onTableChange={ this.handleTableChange }
+                                  selectRow={ selectRow }
+                                  rowStyle={ rowStyle }
+                                  /> :
+                                'Waiting' // or whatever loading state you want, could be null
+                        }             
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
 
-        </div>
-
-      </React.Fragment>
-    );
+        </React.Fragment>
+      );
+    }
   }
 }
 
-export default Contacts;
+const mapStatetoProps = state => ({
+  opened: state.opened,
+})
+
+
+export default connect(mapStatetoProps, null)(Contacts);

@@ -10,6 +10,8 @@ import logolightImg from "../../assets/images/logo-light.png";
 import LanguageDropdown from "../../components/LanguageDropdown";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
+import { Button } from "reactstrap";
+import { connect } from "react-redux";
 
 class TopBar extends Component {
   constructor(props) {
@@ -33,6 +35,7 @@ class TopBar extends Component {
    * Toggles the sidebar
    */
   toggleRightbar() {
+    console.log("OK !");
     this.props.toggleRightSidebar();
   }
 
@@ -130,7 +133,11 @@ class TopBar extends Component {
                 </button>
               </div>
     */}
-              <NotificationDropdown />
+              {/* <NotificationDropdown /> */}
+              <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.clickNotification()}>
+                <i className="mdi mdi-bell-outline"></i>
+                <span className="badge badge-danger badge-pill">2</span>
+              </button>
 
               <ProfileMenu />
 {/*}
@@ -162,4 +169,27 @@ class TopBar extends Component {
   }
 }
 
-export default TopBar;
+const mapStatetoProps = state => ({
+
+})
+
+const mapDispatchtoProps = dispatch => ({
+  openNotification: () => {
+    dispatch({
+      type: "CHAT_OPEN"
+    })
+  },
+  closeNotification: () => {
+    dispatch({
+      type: "CHAT_CLOSE"
+    })
+  },
+  clickNotification: () => {
+    console.log("clicked");
+    dispatch({
+      type: "CHAT_SET"
+    })
+  },
+})
+
+export default connect(mapStatetoProps, mapDispatchtoProps)(TopBar);
