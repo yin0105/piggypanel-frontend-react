@@ -20,12 +20,22 @@ class ChatList extends Component {
         'Authorization': 'token ' + removeQuotes(sessionStorage.getItem('authUser')),
     }
 
+    groups = [
+        {"id": "@admin", "username": "@admin", "last_login": ""},
+        {"id": "@agent", "username": "@agent", "last_login": ""},
+    ]
+
     componentDidMount() {
         console.log("protocol = ", window.location.protocol);
         axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users', {'headers': this.headers})
             .then(response => {
-                console.log("Contact List (Users) = ", response);
-                this.setState({users: response.data});
+                console.log(" group = ", sessionStorage.getItem('access'));
+                const newUsers = sessionStorage.getItem('access')=="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
+                console.log("Contact List (Users) = ", response.data);
+                console.log("groups = ", this.groups);
+                console.log("Contact List (Users) = ", newUsers);
+
+                this.setState({users: newUsers});
             })
             .catch(error => console.log(error, 1))
     }
