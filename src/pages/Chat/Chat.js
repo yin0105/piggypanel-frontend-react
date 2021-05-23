@@ -6,12 +6,12 @@ import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 import { removeQuotes } from '../../assets/js/chatMain';
 import '../../assets/css/chat-room.css';
+import { connect } from "react-redux";
 
 
 class Chat extends Component {
     constructor(props) {
         super(props);
-        console.log("ws = ", 'ws://' + window.location.hostname +':8000/chat/stream/')
         this.state = {
             chat: {
                 messages: [],
@@ -29,8 +29,6 @@ class Chat extends Component {
     }
 
     componentDidMount() {
-        console.log("Chat :: componentDidMount()");
-        console.log("token: ", this.headers);
         this.setupWebsocket();
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
@@ -64,7 +62,7 @@ class Chat extends Component {
 
     componentWillUnmount() {
         console.log("Chat :: componentWillUnmount()");
-        this.state.ws.close();
+        this.props.closeChat();
     }
 
     setupWebsocket() {
@@ -110,6 +108,7 @@ class Chat extends Component {
                     this.setState({messages: conversation});
                 } else {
                     console.log("== not seeing");
+                    this.props.addUnreadCount();
                 }
             }
         };
@@ -237,4 +236,22 @@ class Chat extends Component {
     }
 }  
 
-export default Chat;
+const mapStatetoProps = state => ({
+    unread: state.Notification.unreadCount,
+})
+
+const mapDispatchtoProps = dispatch => ({
+    addUnreadCount: () => {
+        dispatch({
+            type: "UNREAD_ADD",
+        })
+    },
+
+    closeChat: () => {
+      dispatch({
+        type: "CHAT_CLOSE"
+      })
+    },
+})
+
+export default connect(mapStatetoProps, mapDispatchtoProps)(Chat);  

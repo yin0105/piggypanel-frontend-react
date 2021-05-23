@@ -12,15 +12,96 @@ import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
+import forge from 'node-forge';
+import CryptoJS from 'crypto-js';
+import JSEncrypt from 'jsencrypt';
+import { removeQuotes } from '../../assets/js/chatMain';
+
 
 class TopBar extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      chat: {
+          messages: [],
+          id: window.chat
+      },
+      type: 'rsa',
+      socket: new WebSocket('ws://' + window.location.hostname +':8000/chat/stream/'),
+      publicKey: new JSEncrypt(),
+      opened: false,
+    };
 
     this.toggleFullscreen = this.toggleFullscreen.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.toggleRightbar = this.toggleRightbar.bind(this);
+  }
+
+  componentDidMount() {
+    this.setupWebsocket();
+  }
+
+  componentWillUnmount() {
+    console.log("Topbar :: Chat :: componentWillUnmount()");
+    this.state.socket.close();
+}
+
+  setupWebsocket() {
+    console.log("Topbar :: Chat :: setupWebsocket()");
+    let websocket = this.state.socket;
+    try {
+        websocket.onopen = () => {
+            this.setState({opened: true});
+            console.log('Topbar :: Chat :: open');
+            let message = {
+                command: 'prejoin',
+                chat: this.state.chat.id,
+                group: 'admin',
+                user: removeQuotes(sessionStorage.getItem("authId")),
+            };
+            this.state.opened && this.state.socket.send(JSON.stringify(message));
+        };
+    } catch (e) {
+        console.log("== socket open error: ", e)
+    }
+
+    websocket.onmessage = (evt) => {
+        let data = JSON.parse(evt.data)
+        if ('key' in data) {
+            console.log("== OnMessage() =>", data)
+            this.setState({
+                publicKey: forge.pki.publicKeyFromPem(data.key)
+            });
+        } else if ('prejoin' in data) {
+            console.log(" == prejoin ");
+        }
+        else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
+            let sender = data.receiver.split("_")[1];
+            console.log("new message = ", data.message);
+            console.log("receiver = ", data.receiver);
+            console.log("sender = ", sender);
+            console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
+            console.log("oppo = ", this.props.user);
+            
+            if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
+                let conversation = this.state.chat.messages;
+                conversation.push(data.message)
+                this.setState({messages: conversation});
+            } else {
+                console.log("Top Bar :: Chat == not seeing");
+                if (!this.props.opened) {
+                  console.log("opened : false");
+                  this.props.addUnreadCount();
+              } else {
+                  console.log("opened : true");
+              }
+            }
+        }
+    };
+
+    websocket.onclose = () => {
+        console.log('closed')
+    }
   }
 
   /**
@@ -134,9 +215,9 @@ class TopBar extends Component {
               </div>
     */}
               {/* <NotificationDropdown /> */}
-              <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.clickNotification()}>
+              <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
                 <i className="mdi mdi-bell-outline"></i>
-                <span className="badge badge-danger badge-pill">2</span>
+                <span className="badge badge-danger badge-pill" style={{ display: this.props.unread > 0 ? 'block' : 'none'}}>{this.props.unread}</span>
               </button>
 
               <ProfileMenu />
@@ -170,24 +251,29 @@ class TopBar extends Component {
 }
 
 const mapStatetoProps = state => ({
-
+  unread: state.Notification.unreadCount,
+  opened: state.Notification.opened,
 })
 
 const mapDispatchtoProps = dispatch => ({
-  openNotification: () => {
+  openChat: () => {
     dispatch({
       type: "CHAT_OPEN"
     })
   },
-  closeNotification: () => {
+  // closeChat: () => {
+  //   dispatch({
+  //     type: "CHAT_CLOSE"
+  //   })
+  // },
+  // clickNotification: () => {
+  //   dispatch({
+  //     type: "CHAT_SET"
+  //   })
+  // },
+  addUnreadCount: () => {
     dispatch({
-      type: "CHAT_CLOSE"
-    })
-  },
-  clickNotification: () => {
-    console.log("clicked");
-    dispatch({
-      type: "CHAT_SET"
+        type: "UNREAD_ADD",
     })
   },
 })

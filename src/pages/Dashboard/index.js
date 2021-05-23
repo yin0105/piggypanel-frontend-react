@@ -73,7 +73,7 @@ class Dashboard extends Component {
 }
 
 const mapStatetoProps = state => ({
-  opened: state.opened,
-})
+  opened: state.Notification.opened,
+});
 
 export default connect(mapStatetoProps, null)(Dashboard);
