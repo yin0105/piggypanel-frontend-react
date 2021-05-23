@@ -91,7 +91,7 @@ class ChatList extends Component {
                             data.append('receiver', user.id);
                             data.append('sender', sessionStorage.getItem('authId'));
                             axios.post(window.location.protocol + '//' + window.location.hostname + ':8000/create-chat/', data, {'headers': this.headers})
-                                .then(response => {
+                                .then(response => { 
                                     console.log(response)
                                     this.props.updateMainChat(response.data)
                                     this.props.updateUser(user.id)
