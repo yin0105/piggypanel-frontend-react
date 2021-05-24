@@ -90,10 +90,10 @@ class TopBar extends Component {
             } else {
                 console.log("Top Bar :: Chat == not seeing");
                 if (!this.props.opened) {
-                  console.log("opened : false");
+                  console.log("TopBar :: opened : false");
                   this.props.addUnreadCount();
               } else {
-                  console.log("opened : true");
+                  console.log("TopBar :: opened : true");
               }
             }
         }

@@ -24,6 +24,7 @@ class ChatMain extends Component {
       user: '',
       user_2: '',
       side_two_left: '-100%',
+      userUnread : [],
     };    
   }
 
@@ -58,7 +59,7 @@ class ChatMain extends Component {
     // } else {
       return <div className="app-one msg m-3"> 
               <div key={1} className="col-sm-4 side msg">
-                <ChatList chats={this.state.chats} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
+                <ChatList chats={this.state.chats} userUnread={this.state.userUnread} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
                 <ContactList className="msg" updateMainChat={chat => {
                       this.setState({mainChat: chat})
                       axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/chats/', {'headers': this.headers})
@@ -74,7 +75,7 @@ class ChatMain extends Component {
                   side_two_left={ this.state.side_two_left }
                 />
               </div>
-              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2} className="msg" />,
+              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateUserUnread={(user, sentTime) => {this.setState({userUnread: [user, sentTime]})}} className="msg" />,
             </div>
     // }
   }

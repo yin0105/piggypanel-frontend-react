@@ -29,6 +29,7 @@ class Chat extends Component {
     }
 
     componentDidMount() {
+        this.props.openChat();
         this.setupWebsocket();
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
@@ -109,6 +110,7 @@ class Chat extends Component {
                 } else {
                     console.log("== not seeing");
                     this.props.addUnreadCount();
+                    this.props.updateUserUnread(sender, new Date());
                 }
             }
         };
@@ -241,6 +243,12 @@ const mapStatetoProps = state => ({
 })
 
 const mapDispatchtoProps = dispatch => ({
+    openChat: () => {
+        dispatch({
+            type: "CHAT_OPEN"
+        })
+    },
+
     addUnreadCount: () => {
         dispatch({
             type: "UNREAD_ADD",

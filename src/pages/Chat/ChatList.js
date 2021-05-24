@@ -21,12 +21,11 @@ class ChatList extends Component {
     }
 
     groups = [
-        {"id": "@admin", "username": "@admin", "last_login": ""},
-        {"id": "@agent", "username": "@agent", "last_login": ""},
+        {"id": "@admin", "username": "@admin", "last_login": "", "unread": 0,},
+        {"id": "@agent", "username": "@agent", "last_login": "", "unread": 0,},
     ]
 
     componentDidMount() {
-        console.log("protocol = ", window.location.protocol);
         axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users', {'headers': this.headers})
             .then(response => {
                 console.log(" group = ", sessionStorage.getItem('access'));
@@ -38,6 +37,27 @@ class ChatList extends Component {
                 this.setState({users: newUsers});
             })
             .catch(error => console.log(error, 1))
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log("ChatList :: componentWillReceiveProps() ", nextProps);
+        console.log("nextProps.userUnread.length = ", nextProps.userUnread);
+        if (nextProps.userUnread && nextProps.userUnread.length > 0) {
+            console.log(" if ok");
+            let users = this.state.users;
+            for (let i in users) {
+                console.log("user.id, userUnread[0] :: ", users[i].id, nextProps.userUnread[0]);
+                console.log("user : ", users[i]);
+                if (users[i].id == nextProps.userUnread[0]) {
+                    users[i].unread = parseInt(users[i].unread) + 1;
+                    break;
+                }
+            }
+            this.setState({
+                users: users,
+            });
+        }
+
     }
         
     render() {
@@ -115,6 +135,7 @@ class ChatList extends Component {
                             <div className="col-sm-3 col-xs-3 sideBar-avatar msg">
                                 <div className="avatar-icon msg">
                                     <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt='avatar' />
+                                    <span className="badge badge-danger badge-pill" style={{ display: user.unread > 0 ? 'block' : 'none'}}>{user.unread}</span>
                                 </div>
                             </div>
                             <div className="col-sm-9 col-xs-9 sideBar-main msg">
