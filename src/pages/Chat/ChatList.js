@@ -4,6 +4,7 @@ import '../../assets/css/chat-room.css';
 
 import $ from 'jquery';
 import axios from 'axios';
+import { connect } from "react-redux";
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -12,7 +13,8 @@ class ChatList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: []
+            users: [],
+            unreadList: [],
         };
     }
 
@@ -29,44 +31,63 @@ class ChatList extends Component {
         axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users', {'headers': this.headers})
             .then(response => {
                 console.log(" group = ", sessionStorage.getItem('access'));
-                const newUsers = sessionStorage.getItem('access')=="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
+                const newUsers = sessionStorage.getItem('access')==="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
                 console.log("Contact List (Users) = ", response.data);
                 console.log("groups = ", this.groups);
                 console.log("Contact List (Users) = ", newUsers);
 
                 this.setState({users: newUsers});
+                console.log(":: DidMount() ", this.state.unreadList);
+                this.updateUserListWithUnreadList(this.state.unreadList);
             })
             .catch(error => console.log(error, 1))
     }
 
     componentWillReceiveProps(nextProps) {
         console.log("ChatList :: componentWillReceiveProps() ", nextProps);
-        console.log("nextProps.userUnread.length = ", nextProps.userUnread);
-        if (nextProps.userUnread && nextProps.userUnread.length > 0) {
-            console.log(" if ok");
-            let users = this.state.users;
-            for (let i in users) {
-                console.log("user.id, userUnread[0] :: ", users[i].id, nextProps.userUnread[0]);
-                console.log("user : ", users[i]);
-                if (users[i].id == nextProps.userUnread[0]) {
-                    users[i].unread = parseInt(users[i].unread) + 1;
-                    break;
-                }
-            }
-            this.setState({
-                users: users,
-            });
+        console.log("nextProps.userUnread.length = ", nextProps.unreadList);
+        // if (nextProps.userUnread && nextProps.userUnread.length > 0) {
+        //     const unreadList = nextProps.userUnread[0];
+        //     this.props.saveUnreadCount(unreadList);            
+        //     this.updateUserListWithUnreadList(unreadList);
+        // } else 
+        if (nextProps.unreadList && nextProps.unreadList.length > 0) {
+            this.setState({unreadList: nextProps.unreadList});
+            this.updateUserListWithUnreadList(nextProps.unreadList);
         }
 
+        
+
+    }
+
+    updateUserListWithUnreadList = unreadList => {
+        console.log(":: updateUserListWithUnreadList :: ", this.state.users.length);
+        let users = this.state.users;
+        let totalUnread = 0;
+        for (const i in users) {
+            for (const j in unreadList) {
+                console.log("users[i].id , unreadList[j].user = ", users[i].id, unreadList[j].user);
+                if (users[i].id == unreadList[j].user) {
+                    users[i].unread = unreadList[j].unread;  
+                    totalUnread += parseInt(unreadList[j].unread);
+                }
+            }
+        }
+
+        this.props.setUnreadCount(totalUnread);
+        this.setState({
+            users: users,
+        });
     }
         
     render() {
+        
         return (
             <div className="side-one msg">
                 <div className="row heading msg">
                     <div className="col-sm-3 col-xs-3 heading-avatar msg">
                         <div className="heading-avatar-icon msg">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar" className="msg" />
+                            <img src={require('../../assets/images/avatar/avatar-1.png')}  alt="avatar" className="msg"/>
                         </div>
                     </div>
                     <div className="col-sm-4 col-xs-1 heading-name  msg">
@@ -125,6 +146,17 @@ class ChatList extends Component {
                                     console.log(response)
                                     this.props.updateMainChat(response.data)
                                     this.props.updateUser(user.id)
+                                    
+                                    console.log("sender_2 = ", user.id, " recevier_s = ", sessionStorage.getItem('authId'));
+                                    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${user.id}&receiver=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
+                                        .then(response_2 => {
+                                            console.log("response_2 = ", response_2.data.data);
+                                            this.props.saveUnreadCount(response_2.data.data);
+                                            // this.updateUserListWithUnreadList(response_2.data.data);
+                                            // console.log("== Unread => ",  response.data.data);
+                                            // this.props.updateUserUnread(response.data.data, new Date());
+                                        })
+                                        .catch(error => console.log(error))
                                 })
                                 .catch(error => console.log(error, 2));
                             
@@ -134,7 +166,7 @@ class ChatList extends Component {
                         }}>
                             <div className="col-sm-3 col-xs-3 sideBar-avatar msg">
                                 <div className="avatar-icon msg">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt='avatar' />
+                                    <img src={require('../../assets/images/avatar/avatar-2.png')}  alt='avatar' style={{ filter: `saturate(0%)` }}/>
                                     <span className="badge badge-danger badge-pill" style={{ display: user.unread > 0 ? 'block' : 'none'}}>{user.unread}</span>
                                 </div>
                             </div>
@@ -156,4 +188,30 @@ class ChatList extends Component {
     }
 }
 
-export default ChatList;
+
+const mapStatetoProps = state => ({
+    unread: state.Notification.unreadCount,
+    unreadList: state.Notification.unreadList,
+})
+
+const mapDispatchtoProps = dispatch => ({
+    setUnreadCount: (count) => {
+        dispatch({
+            type: "UNREAD_SET",
+            payload: {
+                count: count,
+            }
+        })
+    },
+    
+    saveUnreadCount: (unreadList) => {
+        dispatch({
+            type: "UNREAD_SAVE",
+            payload: {
+                unreadList: unreadList,
+            }
+        })
+    },
+})
+
+export default connect(mapStatetoProps, mapDispatchtoProps)(ChatList);  

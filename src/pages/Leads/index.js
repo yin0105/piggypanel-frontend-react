@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Button, Alert } from "reactstrap";
+import { Button, Alert } from "reactstrap";
 import { Link } from "react-router-dom";
 
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -15,8 +15,8 @@ import paginationFactory, {
   PaginationTotalStandalone,
   SizePerPageDropdownStandalone
 } from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
-import { textFilter, numberFilter, Comparator, selectFilter, dateFilter } from 'react-bootstrap-table2-filter';
+// import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
+import { textFilter, numberFilter, selectFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import moment from 'moment';
 import { connect } from "react-redux";
@@ -143,7 +143,7 @@ class Leads extends Component{
   }
 
   fetchData() {
-    const { loaded,sizePerPage, page, totalSize, columns, items, keyField, SearchByDates, initialFilterQuery, sortField, sortOrder, filters, searchText  } = this.state;
+    const { loaded,sizePerPage, page, initialFilterQuery, sortField, sortOrder, filters, searchText  } = this.state;
     let qs =  {}
 
     // console.log('FetchData');
@@ -215,7 +215,7 @@ class Leads extends Component{
       qs += '&search='+searchText
     }
 
-    fetch(`${process.env.REACT_APP_API_URL}`+'/api/leads'+qs, {
+    fetch(`${process.env.REACT_APP_API_URL}/api/leads${qs}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')}
     })
@@ -278,7 +278,7 @@ class Leads extends Component{
   actionFormatter = (cell,row,rowIndex,formatExtraData)=>{
     let editlink;
     const edit = formatExtraData.edit; 
-    const del = formatExtraData.delete;
+    // const del = formatExtraData.delete;
     
     let query_items = {};     
     if(formatExtraData.query_vars){
@@ -326,7 +326,7 @@ class Leads extends Component{
     if(edit){
       // console.log('edit link')
       // console.log(this.state.filters)
-      let state_vars = {'items':this.state.items, 'page': this.state.page,'page': this.state.page, 'sizePerPage': this.state.sizePerPage, 'totalSize': this.state.totalSize, 'nextpage': this.state.nextpage, 'prevpage':this.state.prevpage, filters:this.state.filters}
+      // let state_vars = {'items':this.state.items, 'page': this.state.page,'page': this.state.page, 'sizePerPage': this.state.sizePerPage, 'totalSize': this.state.totalSize, 'nextpage': this.state.nextpage, 'prevpage':this.state.prevpage, filters:this.state.filters}
       editlink = <Link to={{
         pathname:formatExtraData.link_to,
         search: "?"+QueryString,
@@ -368,7 +368,7 @@ class Leads extends Component{
   deleteSelected = () => {
     const {selected} =  this.state
 
-    fetch(`${process.env.REACT_APP_API_URL}`+'/api/leads/delete-leads/', {
+    fetch(`${process.env.REACT_APP_API_URL}/api/leads/delete-leads/`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')},
       body: JSON.stringify(selected)
@@ -390,7 +390,7 @@ class Leads extends Component{
 
   
   render() {  
-    const { isLayoutLoaded, isDataLoaded, cols, page, sizePerPage, selected, showDelAlert, totaldeleted, superuser, agent } = this.state;
+    const { isLayoutLoaded, isDataLoaded, cols, page, sizePerPage, selected, showDelAlert, totaldeleted, superuser } = this.state;
     // console.log(this.state)
     var columns = [];
     let selectRow;

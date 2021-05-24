@@ -36,7 +36,7 @@ class Layout extends Component {
     window.scrollTo(0, 0);
 
     const title = this.props.location.pathname;
-    let currentage =  title.charAt(1).toUpperCase() + title.slice(2);
+    // let currentage =  title.charAt(1).toUpperCase() + title.slice(2);
 
     document.title = "Pepe's Piggy Panel";
       //currentage + " | Pepe's Piggy Panel";

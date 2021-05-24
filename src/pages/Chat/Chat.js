@@ -7,6 +7,7 @@ import JSEncrypt from 'jsencrypt';
 import { removeQuotes } from '../../assets/js/chatMain';
 import '../../assets/css/chat-room.css';
 import { connect } from "react-redux";
+import axios from 'axios';
 
 
 class Chat extends Component {
@@ -30,7 +31,7 @@ class Chat extends Component {
 
     componentDidMount() {
         this.props.openChat();
-        this.setupWebsocket();
+        this.setupWebsocket();        
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
         }
@@ -103,15 +104,27 @@ class Chat extends Component {
                 console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
                 console.log("oppo = ", this.props.user);
                 
+                let read_sender = -1;
+                const receiver = removeQuotes(sessionStorage.getItem("authId"));
                 if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
                     let conversation = this.state.chat.messages;
                     conversation.push(data.message)
                     this.setState({messages: conversation});
+                    if (this.props.user == sender) {
+                        read_sender = sender;
+                    }
                 } else {
                     console.log("== not seeing");
-                    this.props.addUnreadCount();
-                    this.props.updateUserUnread(sender, new Date());
+                    // this.props.addUnreadCount();                    
                 }
+
+                axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})
+                    .then(response => {
+                        console.log("== Unread => ",  response.data.data);
+                        // this.props.updateUserUnread(response.data.data, new Date());
+                        this.props.saveUnreadCount(response.data.data);
+                    })
+                    .catch(error => console.log(error))
             }
         };
     
@@ -160,9 +173,7 @@ class Chat extends Component {
     }
 
     render() {
-        console.log("Chat :: render()");
         const user = sessionStorage.getItem('authId');
-        console.log("== user = ", user);
         const chat = this.props.chat;
         let messages = '';
         if (this.state.chat.id === 0) {
@@ -182,7 +193,7 @@ class Chat extends Component {
                 <div className="row heading msg">
                     <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
                         <div className="heading-avatar-icon msg">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="avatar" className="msg" />
+                            <img src={require('../../assets/images/avatar/avatar-2.png')} alt="avatar" className="msg" />
                         </div>
                     </div>
                     <div className="col-sm-8 col-xs-7 heading-name msg">
@@ -239,7 +250,7 @@ class Chat extends Component {
 }  
 
 const mapStatetoProps = state => ({
-    unread: state.Notification.unreadCount,
+    unreadList: state.Notification.unreadList,
 })
 
 const mapDispatchtoProps = dispatch => ({
@@ -249,16 +260,25 @@ const mapDispatchtoProps = dispatch => ({
         })
     },
 
-    addUnreadCount: () => {
-        dispatch({
-            type: "UNREAD_ADD",
-        })
-    },
+    // addUnreadCount: () => {
+    //     dispatch({
+    //         type: "UNREAD_ADD",
+    //     })
+    // },
 
     closeChat: () => {
       dispatch({
         type: "CHAT_CLOSE"
       })
+    },
+
+    saveUnreadCount: (unreadList) => {
+        dispatch({
+            type: "UNREAD_SAVE",
+            payload: {
+                unreadList: unreadList,
+            }
+        })
     },
 })
 

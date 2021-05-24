@@ -7,15 +7,20 @@ import logosmImg from "../../assets/images/logo-sm.png";
 import logolightImg from "../../assets/images/logo-light.png";
 
 // Import other Dropdown
-import LanguageDropdown from "../../components/LanguageDropdown";
-import NotificationDropdown from "../../components/NotificationDropdown";
+// import LanguageDropdown from "../../components/LanguageDropdown";
+// import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
-import { Button } from "reactstrap";
+// import { Button } from "reactstrap";
 import { connect } from "react-redux";
 import forge from 'node-forge';
-import CryptoJS from 'crypto-js';
+// import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 import { removeQuotes } from '../../assets/js/chatMain';
+import axios from 'axios';
+// import { Icon, InlineIcon } from '@iconify/react';
+// import messageCircleOutline from '@iconify-icons/eva/message-circle-outline';
+// import { MessageCircle } from '@dcp-ui/icons.message-circle'
+
 
 
 class TopBar extends Component {
@@ -39,12 +44,28 @@ class TopBar extends Component {
 
   componentDidMount() {
     this.setupWebsocket();
+    this.initUnreadCount();
   }
 
   componentWillUnmount() {
     console.log("Topbar :: Chat :: componentWillUnmount()");
     this.state.socket.close();
-}
+  }
+
+  initUnreadCount = () => {
+    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=-1&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
+      .then(response => {
+          const unreadList = response.data.data;
+          let totalUnread = 0;
+          for (const j in unreadList) {
+              totalUnread += parseInt(unreadList[j].unread);
+          }
+          
+          this.props.setUnreadCount(totalUnread);
+          this.props.saveUnreadCount(unreadList);
+      })
+      .catch(error => console.log(error))
+  }
 
   setupWebsocket() {
     console.log("Topbar :: Chat :: setupWebsocket()");
@@ -83,18 +104,16 @@ class TopBar extends Component {
             console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
             console.log("oppo = ", this.props.user);
             
-            if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
-                let conversation = this.state.chat.messages;
-                conversation.push(data.message)
-                this.setState({messages: conversation});
-            } else {
-                console.log("Top Bar :: Chat == not seeing");
-                if (!this.props.opened) {
-                  console.log("TopBar :: opened : false");
-                  this.props.addUnreadCount();
-              } else {
-                  console.log("TopBar :: opened : true");
-              }
+            // if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
+            //     let conversation = this.state.chat.messages;
+            //     conversation.push(data.message)
+            //     this.setState({messages: conversation});
+            // } else {
+                
+            // }
+
+            if (!this.props.opened) {
+              this.initUnreadCount();
             }
         }
     };
@@ -216,7 +235,9 @@ class TopBar extends Component {
     */}
               {/* <NotificationDropdown /> */}
               <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
-                <i className="mdi mdi-bell-outline"></i>
+                {/* <Icon icon={messageCircleOutline} /> */}
+                <i className="mdi mdi-message-outline"></i>
+                {/* <MessageCircle/> */}
                 <span className="badge badge-danger badge-pill" style={{ display: this.props.unread > 0 ? 'block' : 'none'}}>{this.props.unread}</span>
               </button>
 
@@ -261,19 +282,28 @@ const mapDispatchtoProps = dispatch => ({
       type: "CHAT_OPEN"
     })
   },
-  // closeChat: () => {
-  //   dispatch({
-  //     type: "CHAT_CLOSE"
-  //   })
-  // },
-  // clickNotification: () => {
-  //   dispatch({
-  //     type: "CHAT_SET"
-  //   })
-  // },
+
   addUnreadCount: () => {
     dispatch({
         type: "UNREAD_ADD",
+    })
+  },
+
+  setUnreadCount: (count) => {
+    dispatch({
+        type: "UNREAD_SET",
+        payload: {
+            count: count,
+        }
+    })
+  },
+
+  saveUnreadCount: (unreadList) => {
+    dispatch({
+        type: "UNREAD_SAVE",
+        payload: {
+            unreadList: unreadList,
+        }
     })
   },
 })

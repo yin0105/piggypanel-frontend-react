@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-import {
-  DropdownItem,
-  DropdownMenu,
-  Dropdown,
-  DropdownToggle
-} from "reactstrap";
+// import {
+//   DropdownItem,
+//   DropdownMenu,
+//   Dropdown,
+//   DropdownToggle
+// } from "reactstrap";
 
 // import images
 import logodarkImg from "../../assets/images/logo-dark.png";
@@ -14,8 +14,8 @@ import logosmImg from "../../assets/images/logo-sm.png";
 import logolightImg from "../../assets/images/logo-light.png";
 
 // Import other Dropdown
-import LanguageDropdown from "../../components/LanguageDropdown";
-import NotificationDropdown from "../../components/NotificationDropdown";
+// import LanguageDropdown from "../../components/LanguageDropdown";
+// import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
 
 class TopBar extends Component {

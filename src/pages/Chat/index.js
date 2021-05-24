@@ -75,7 +75,7 @@ class ChatMain extends Component {
                   side_two_left={ this.state.side_two_left }
                 />
               </div>
-              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateUserUnread={(user, sentTime) => {this.setState({userUnread: [user, sentTime]})}} className="msg" />,
+              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateUserUnread={(unreadList, sentTime) => {this.setState({userUnread: [unreadList, sentTime]})}} className="msg" />,
             </div>
     // }
   }

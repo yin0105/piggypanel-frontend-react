@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import SettingMenu from "../Shared/SettingMenu";
 import { Row, Col, Card, CardBody } from "reactstrap";
 // Custom Scrollbar
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 // import charts
 import BarChart from "../AllCharts/chartist/barchart";

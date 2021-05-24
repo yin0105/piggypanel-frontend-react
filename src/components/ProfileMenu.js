@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import { withRouter, Link } from 'react-router-dom';
 
 // users

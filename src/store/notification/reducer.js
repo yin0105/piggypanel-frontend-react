@@ -2,7 +2,8 @@
 
 const initialState = {
     opened: false,
-    unreadCount: 0
+    unreadCount: 0,
+    unreadList: [],
 }
 
 const Notification = (state = initialState, action) => {
@@ -27,11 +28,23 @@ const Notification = (state = initialState, action) => {
             }
             break;   
         case "UNREAD_ADD":
-                state = {
-                    ...state,
-                    unreadCount: state.unreadCount + 1,
-                }
-                break;    
+            state = {
+                ...state,
+                unreadCount: state.unreadCount + 1,
+            }
+            break;
+        case "UNREAD_SET":
+            state = {
+                ...state,
+                unreadCount: action.payload.count,
+            }
+            break;  
+        case "UNREAD_SAVE":
+            state = {
+                ...state,
+                unreadList: action.payload.unreadList,
+            }
+            break;   
         default:
             state = { ...state };
             break;
