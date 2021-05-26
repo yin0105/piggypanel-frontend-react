@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from "reactstrap";
 import SimpleBar from "simplebar-react";
 import "../../assets/css/chat-room.css";
+import { removeQuotes } from '../../assets/js/chatMain';
+import { connect } from "react-redux";
 
 class CharStatusMenu extends Component {
   constructor(props) {
@@ -10,9 +12,56 @@ class CharStatusMenu extends Component {
     this.state = {
       menu: false,
       status: 'on',
-      hideDropdown: true
+      hideDropdown: true,
+      socket: new WebSocket('ws://' + window.location.hostname +':8000/chat/stream/'),
     };
+
     this.toggle = this.toggle.bind(this);
+  }
+
+  componentDidMount() {
+    this.setupWebsocket();
+  }
+
+  setupWebsocket() {
+    let websocket = this.state.socket;
+    try {
+        websocket.onopen = () => {
+            this.setState({opened: true});
+            console.log('ChatStatusMenu :: Chat :: open');
+        };
+    } catch (e) {
+        console.log("== socket open error: ", e)
+    }
+
+    websocket.onmessage = (evt) => {
+      let data = JSON.parse(evt.data)
+      if ('user_status' in data) {
+          let userStatusList = this.props.userStatusList;
+          let updated = false;
+
+          for (let i in userStatusList) {
+              console.log("== userstatus : ", userStatusList[i]);
+              if (userStatusList[i].user == data.user) {
+                  userStatusList[i].status = data.user_status;
+                  updated = true;
+                  break;
+              }
+          }
+
+          if (!updated) {
+              userStatusList.append(data);
+          }
+          console.log(userStatusList)
+          this.props.saveUserStatus(userStatusList);
+          this.setState(userStatusList);
+          this.props.updateUserStatus(userStatusList);
+      }
+    };
+
+    websocket.onclose = () => {
+        console.log('closed')
+    }
   }
 
   toggle() {
@@ -23,6 +72,12 @@ class CharStatusMenu extends Component {
 
   setStatus = status => {
     this.setState({hideDropdown: true, status: status, });
+    let message = {
+      command: 'client_status',
+      user: removeQuotes(sessionStorage.getItem("authId")),
+      status: status,
+    };
+    this.state.socket.send(JSON.stringify(message));
   }
 
   render() {
@@ -64,4 +119,20 @@ class CharStatusMenu extends Component {
     );
   }
 }
-export default CharStatusMenu;
+
+const mapStatetoProps = state => ({
+  userStatusList: state.Notification.userStatusList,
+})
+
+const mapDispatchtoProps = dispatch => ({
+  saveUserStatus: (userStatusList) => {
+      dispatch({
+          type: "USER_STATUS_SAVE",
+          payload: {
+              userStatusList: userStatusList,
+          }
+      })
+  },
+})
+
+export default connect(mapStatetoProps, mapDispatchtoProps)(CharStatusMenu); 

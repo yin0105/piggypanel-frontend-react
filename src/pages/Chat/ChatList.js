@@ -34,17 +34,29 @@ class ChatList extends Component {
             .then(response => {
                 const newUsers = response.data //sessionStorage.getItem('access')==="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
                 this.setState({users: newUsers});
-                this.updateUserListWithUnreadList(this.state.unreadList, this.state.userStatusList);
+                this.updateUserListWithUnreadList(this.state.unreadList, this.props.userStatusList);
             })
             .catch(error => console.log(error, 1))
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("nextProps = ", nextProps);
         if (nextProps.userStatusList && nextProps.userStatusList.length > 0) {
             this.setState({unreadList: nextProps.unreadList});
             this.setState({userStatusList: nextProps.userStatusList});
+            console.log("nextProps.userStatusList = ", nextProps.userStatusList);
             this.updateUserListWithUnreadList(nextProps.unreadList, nextProps.userStatusList);
         }
+    }
+
+    componentWillUpdate(nextProps, nextState){
+        console.log("== componentWillUpdate");
+        // You cannot use this.setState() in this method
+    }
+    
+    // Called IMMEDIATELY AFTER a render
+    componentDidUpdate(prevProps, prevState){
+        console.log("== componentDidUpdate");
     }
 
     updateUserListWithUnreadList = (unreadList, userStatusList) => {
@@ -73,7 +85,29 @@ class ChatList extends Component {
         });
     }
         
-    render() {
+    render() {  
+        console.log("this.props.userStatusList = ", this.props.userStatusList);
+        
+        let { users } = this.state;
+        let totalUnread = 0;
+        for (const i in users) {
+            for (const j in this.props.unreadList) {
+                if (users[i].id == this.props.unreadList[j].user) {
+                    users[i].unread = this.props.unreadList[j].unread;  
+                    totalUnread += parseInt(this.props.unreadList[j].unread);
+                }
+            }
+        }
+
+        for (const i in users) {
+            for (const j in this.props.userStatusList) {
+                if (users[i].id == this.props.userStatusList[j].user) {
+                    users[i].status = this.props.userStatusList[j].status;  
+                }
+            }
+        }
+
+        // this.props.setUnreadCount(totalUnread);
         
         return (
             <div className="side-one msg">
@@ -81,7 +115,7 @@ class ChatList extends Component {
                     <div className="col-sm-3 col-xs-3 heading-avatar msg">
                         {/* <div className="heading-avatar-icon msg">
                             <img src={require('../../assets/images/avatar/avatar-1.png')}  alt="avatar" className="msg"/> */}
-                        <ChatStatusMenu/>
+                        <ChatStatusMenu updateUserStatus={userStatusList => this.setState(userStatusList)}/>
                         {/* </div> */}
                     </div>
                     <div className="col-sm-6 col-xs-1 heading-name  msg">
@@ -104,12 +138,13 @@ class ChatList extends Component {
                 </div>
 
                 <div className="compose-sideBar msg">
-                    { this.state.users.map(user => {
+                    { users.map(user => {
+                        const badge_style = user.status==="away"? "badge-status-away":(user.status==="off"? "badge-status-off": "");
                         let userStatusStye = { filter: `saturate(100%)` };
                         if (user.status == 'off') {
                             userStatusStye = { filter: `saturate(0%)` };
                         } else if (user.status == 'away') {
-                            userStatusStye = { filter: `saturate(0%)` };
+                            userStatusStye = { filter: `saturate(100%)` };
                         }
                         return (<div key={user.id} className="row sideBar-body msg" onClick={() => {
                             let data = new URLSearchParams();
@@ -138,6 +173,7 @@ class ChatList extends Component {
                                 <div className="avatar-icon msg">
                                     <img src={require('../../assets/images/avatar/avatar-2.png')}  alt='avatar' style={ userStatusStye }/>
                                     <span className="badge badge-danger badge-pill" style={{ display: user.unread > 0 ? 'block' : 'none'}}>{user.unread}</span>
+                                    <span className={`badge badge-danger badge-pill badge-connect ${badge_style}`}> </span>
                                 </div>
                             </div>
                             <div className="col-sm-9 col-xs-9 sideBar-main msg">
@@ -165,6 +201,33 @@ const mapStatetoProps = state => ({
     unread: state.Notification.unreadCount,
     unreadList: state.Notification.unreadList,
     userStatusList: state.Notification.userStatusList,
+    // users: () => {
+    //     let users = this.state.users;
+    //     let totalUnread = 0;
+    //     for (const i in users) {
+    //         for (const j in state.Notification.unreadList) {
+    //             if (users[i].id == state.Notification.unreadList[j].user) {
+    //                 users[i].unread = state.Notification.unreadList[j].unread;  
+    //                 totalUnread += parseInt(state.Notification.unreadList[j].unread);
+    //             }
+    //         }
+    //     }
+
+    //     for (const i in users) {
+    //         for (const j in state.Notification.userStatusList) {
+    //             if (users[i].id == state.Notification.userStatusList[j].user) {
+    //                 users[i].status = state.Notification.userStatusList[j].status;  
+    //             }
+    //         }
+    //     }
+    //     console.log(" == users = ", users);
+
+    //     return users
+    //     // this.props.setUnreadCount(totalUnread);
+    //     // this.setState({
+    //     //     users: users,
+    //     // });
+    // }
 })
 
 const mapDispatchtoProps = dispatch => ({

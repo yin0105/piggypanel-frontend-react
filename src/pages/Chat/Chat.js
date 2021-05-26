@@ -23,6 +23,7 @@ class Chat extends Component {
             publicKey: new JSEncrypt(),
             opened: false,
             trasmissible: false,
+            userStatusList: [],
         };
     }
 
@@ -86,10 +87,28 @@ class Chat extends Component {
             if ('key' in data) {
                 this.setState({
                     publicKey: forge.pki.publicKeyFromPem(data.key)
-                });
-            // } else if ('prejoin' in data) {
-            }
-            else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
+                });            
+            // } else if ('user_status' in data) {
+            //     let userStatusList = this.props.userStatusList;
+            //     let updated = false;
+
+            //     for (let i in userStatusList) {
+            //         console.log("== userstatus : ", userStatusList[i]);
+            //         if (userStatusList[i].user == data.user) {
+            //             userStatusList[i].status = data.user_status;
+            //             updated = true;
+            //             break;
+            //         }
+            //     }
+
+            //     if (!updated) {
+            //         userStatusList.append(data);
+            //     }
+            //     console.log(userStatusList)
+            //     this.props.saveUserStatus(userStatusList);
+            //     this.setState(userStatusList);
+
+            } else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
                 let sender = data.receiver.split("_")[1];
                 let read_sender = -1;
                 const receiver = removeQuotes(sessionStorage.getItem("authId"));
@@ -229,6 +248,7 @@ class Chat extends Component {
 const mapStatetoProps = state => ({
     unreadList: state.Notification.unreadList,
     transmissible: state.Notification.transmissible,
+    userStatusList: state.Notification.userStatusList,
 })
 
 const mapDispatchtoProps = dispatch => ({

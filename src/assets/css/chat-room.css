@@ -540,8 +540,27 @@ body.msg {
   padding: 0px;
 }
 
-.btn .badge.badge-me.badge-status-away  {
+.avatar-icon.msg .badge.badge-connect {
+  position: absolute;
+  top: 36px;
+  right: 30px;
+  display: block;
+  height: 14px;
+  width: 14px;
+  line-height: 16px;
+  border-radius: 7px;
+  background-color: #6CDC80;
+  color: white;
+  text-align: center;
+  padding: 0px;
+}
+
+.btn .badge.badge-me.badge-status-away, .avatar-icon.msg .badge.badge-connect.badge-status-away  {
   background-color: #FBC42F;
+}
+
+.avatar-icon.msg .badge.badge-connect.badge-status-off  {
+  background-color: #838383;
 }
 
 .badge {
