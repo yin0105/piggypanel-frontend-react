@@ -8,7 +8,7 @@ import logolightImg from "../../assets/images/logo-light.png";
 
 // Import other Dropdown
 // import LanguageDropdown from "../../components/LanguageDropdown";
-// import NotificationDropdown from "../../components/NotificationDropdown";
+import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
 // import { Button } from "reactstrap";
 import { connect } from "react-redux";
@@ -55,7 +55,7 @@ class TopBar extends Component {
   initUnreadCount = () => {
     axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=-1&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
       .then(response => {
-          const unreadList = response.data.data;
+          const unreadList = response.data.unread;
           let totalUnread = 0;
           for (const j in unreadList) {
               totalUnread += parseInt(unreadList[j].unread);
@@ -63,6 +63,7 @@ class TopBar extends Component {
           
           this.props.setUnreadCount(totalUnread);
           this.props.saveUnreadCount(unreadList);
+          this.props.saveUserStatus(response.data.user_status);
       })
       .catch(error => console.log(error))
   }
@@ -74,13 +75,13 @@ class TopBar extends Component {
         websocket.onopen = () => {
             this.setState({opened: true});
             console.log('Topbar :: Chat :: open');
-            let message = {
-                command: 'prejoin',
-                chat: this.state.chat.id,
-                group: 'admin',
-                user: removeQuotes(sessionStorage.getItem("authId")),
-            };
-            this.state.opened && this.state.socket.send(JSON.stringify(message));
+            // let message = {
+            //     command: 'prejoin',
+            //     chat: this.state.chat.id,
+            //     group: 'admin',
+            //     user: removeQuotes(sessionStorage.getItem("authId")),
+            // };
+            // this.state.opened && this.state.socket.send(JSON.stringify(message));
         };
     } catch (e) {
         console.log("== socket open error: ", e)
@@ -93,8 +94,8 @@ class TopBar extends Component {
             this.setState({
                 publicKey: forge.pki.publicKeyFromPem(data.key)
             });
-        } else if ('prejoin' in data) {
-            console.log(" == prejoin ");
+        // } else if ('prejoin' in data) {
+        //     console.log(" == prejoin ");
         }
         else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
             let sender = data.receiver.split("_")[1];
@@ -236,7 +237,8 @@ class TopBar extends Component {
               {/* <NotificationDropdown /> */}
               <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
                 {/* <Icon icon={messageCircleOutline} /> */}
-                <i className="mdi mdi-message-outline"></i>
+                {/* <i className="mdi mdi-bell-outline"></i> */}
+                <i className="fa fa-comments fa-2x  pull-right msg-outline" aria-hidden="true"></i>
                 {/* <MessageCircle/> */}
                 <span className="badge badge-danger badge-pill" style={{ display: this.props.unread > 0 ? 'block' : 'none'}}>{this.props.unread}</span>
               </button>
@@ -303,6 +305,15 @@ const mapDispatchtoProps = dispatch => ({
         type: "UNREAD_SAVE",
         payload: {
             unreadList: unreadList,
+        }
+    })
+  },
+
+  saveUserStatus: (userStatusList) => {
+    dispatch({
+        type: "USER_STATUS_SAVE",
+        payload: {
+            userStatusList: userStatusList,
         }
     })
   },

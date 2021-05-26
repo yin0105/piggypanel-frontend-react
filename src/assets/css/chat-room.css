@@ -476,7 +476,22 @@ body.msg {
   display: block;
   height: 18px;
   width: 18px;
-  line-height: 19px;
+  line-height: 16px;
+  border-radius: 9px;
+  background-color: #ec4561;
+  color: white;
+  text-align: center;
+  padding: 0px;
+}
+
+.noti-icon .badge  {
+  position: absolute;
+  top: 0px;
+  right: 25px;
+  display: block;
+  height: 18px;
+  width: 18px;
+  line-height: 14px;
   border-radius: 9px;
   background-color: #ec4561;
   color: white;
@@ -487,6 +502,56 @@ body.msg {
 .my-message-icon:before {
   content: "\f029";
 }
+
+.dropdown-menu.show.my, .dropdown-menu.dropdown-show.my {
+  top: 20px !important;
+  left: 30px !important;
+  padding: 10px 20px !important;
+  width: 100px !important;
+  min-width: 100px !important;
+  background-color:cornsilk;
+  display: block;
+  margin-top: 5px;
+}
+
+.dropdown-menu.show.my div, .dropdown-menu.dropdown-show.my div {
+  padding: 5px 0px !important;
+}
+
+.dropdown-menu.show.my a, .dropdown-menu.dropdown-show.my a {
+  color: black !important;
+}
+
+.dropdown-menu.show.my a:hover, .dropdown-menu.dropdown-show.my a:hover{
+  color: blue !important;
+}
+
+.btn .badge.badge-me  {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+  display: block;
+  height: 12px;
+  width: 12px;
+  line-height: 14px;
+  border-radius: 6px;
+  background-color: #6CDC80;
+  color: white;
+  padding: 0px;
+}
+
+.btn .badge.badge-me.badge-status-away  {
+  background-color: #FBC42F;
+}
+
+.badge {
+  border: 2px solid white;
+}
+
+.dropdown-menu.my.dropdown-hide {
+  display: none !important;
+}
+
 @media screen and (max-width: 700px) {
   .app.msg {
     top: 0;

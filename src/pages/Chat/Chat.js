@@ -22,6 +22,7 @@ class Chat extends Component {
             socket: new WebSocket('ws://' + window.location.hostname +':8000/chat/stream/'),
             publicKey: new JSEncrypt(),
             opened: false,
+            trasmissible: false,
         };
     }
 
@@ -38,7 +39,6 @@ class Chat extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Chat :: componentWillReceiveProps() ", nextProps);
         if (nextProps.chat) {
             this.setState({
                 chat: nextProps.chat
@@ -49,38 +49,33 @@ class Chat extends Component {
                 chat: nextProps.chat.id,
                 user: removeQuotes(sessionStorage.getItem("authId")),
             };
-            console.log("=== message = ", message);
             this.state.opened && this.state.socket.send(JSON.stringify(message));
         }
 
     }
 
     componentDidUpdate() {
-        console.log("Chat :: componentDidUpdate()");
         if (typeof this.messagesDiv !== "undefined") {
             this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
         }
     }
 
     componentWillUnmount() {
-        console.log("Chat :: componentWillUnmount()");
         this.props.closeChat();
     }
 
     setupWebsocket() {
-        console.log("Chat :: setupWebsocket()");
         let websocket = this.state.socket;
         try {
             websocket.onopen = () => {
                 this.setState({opened: true});
-                console.log('::: open');
-                let message = {
-                    command: 'prejoin',
-                    chat: this.state.chat.id,
-                    group: 'admin',
-                    user: removeQuotes(sessionStorage.getItem("authId")),
-                };
-                this.state.opened && this.state.socket.send(JSON.stringify(message));
+                // let message = {
+                //     command: 'prejoin',
+                //     chat: this.state.chat.id,
+                //     group: 'admin',
+                //     user: removeQuotes(sessionStorage.getItem("authId")),
+                // };
+                // this.state.opened && this.state.socket.send(JSON.stringify(message));
             };
         } catch (e) {
             console.log("== socket open error: ", e)
@@ -89,21 +84,13 @@ class Chat extends Component {
         websocket.onmessage = (evt) => {
             let data = JSON.parse(evt.data)
             if ('key' in data) {
-                console.log("== OnMessage() =>", data)
                 this.setState({
                     publicKey: forge.pki.publicKeyFromPem(data.key)
                 });
-            } else if ('prejoin' in data) {
-                console.log(" == prejoin ");
+            // } else if ('prejoin' in data) {
             }
             else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
                 let sender = data.receiver.split("_")[1];
-                console.log("new message = ", data.message);
-                console.log("receiver = ", data.receiver);
-                console.log("sender = ", sender);
-                console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
-                console.log("oppo = ", this.props.user);
-                
                 let read_sender = -1;
                 const receiver = removeQuotes(sessionStorage.getItem("authId"));
                 if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
@@ -113,16 +100,12 @@ class Chat extends Component {
                     if (this.props.user == sender) {
                         read_sender = sender;
                     }
-                } else {
-                    console.log("== not seeing");
-                    // this.props.addUnreadCount();                    
                 }
 
                 axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})
                     .then(response => {
-                        console.log("== Unread => ",  response.data.data);
-                        // this.props.updateUserUnread(response.data.data, new Date());
-                        this.props.saveUnreadCount(response.data.data);
+                        this.props.saveUnreadCount(response.data.unread);
+                        this.props.saveUserStatus(response.data.user_status);
                     })
                     .catch(error => console.log(error))
             }
@@ -134,15 +117,11 @@ class Chat extends Component {
     }
 
     rsaEncrypt(text) {
-        console.log("Chat :: rsaEncrypt()");
-        console.log("publicKey = ", this.state.publicKey);
         let encryptedMessage = this.state.publicKey.encrypt(text, "RSA-OAEP", {
             md: forge.md.sha256.create(),
             mgf1: forge.mgf1.create()
         });
-        console.log(encryptedMessage)
         let messageBase64 = forge.util.encode64(encryptedMessage);
-        console.log(messageBase64)
         let message = {
             command: 'send',
             chat: this.state.chat.id,
@@ -155,13 +134,11 @@ class Chat extends Component {
     }
 
     aesEncrypt(text) {
-        console.log("Chat :: aesEncrypt()");
         var key = CryptoJS.enc.Utf8.parse('1234567890123456');
         var iv = CryptoJS.enc.Utf8.parse('this is a passph');
         
         var encrypted = CryptoJS.AES.encrypt(text, key, {iv: iv});
         let encrypted_text = iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64);
-        console.log(encrypted_text); 
         let message = {
             command: 'send',
             chat: this.state.chat.id,
@@ -188,7 +165,9 @@ class Chat extends Component {
             />});
         }
 
+        console.log(" == ", !this.props.transmissible);
         return (
+            
             <div className="col-sm-8 conversation msg">
                 <div className="row heading msg">
                     <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
@@ -204,9 +183,9 @@ class Chat extends Component {
                         </a>
                         <span className="heading-online msg">Online</span>
                     </div>
-                    <div className="col-sm-1 col-xs-1  heading-dot pull-right msg">
+                    {/* <div className="col-sm-1 col-xs-1  heading-dot pull-right msg">
                         <i className="fa fa-ellipsis-v fa-2x  pull-right msg" aria-hidden="true"></i>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="message msg" id="conversation" ref={messages => {this.messagesDiv = messages;}}>
                     <br />
@@ -220,12 +199,11 @@ class Chat extends Component {
                         } else {
                             this.setState({type: 'rsa'});
                         }
-                        console.log(this.state.type);
                     }}>
                         <i className="fa fa-smile-o fa-2x msg"></i>
                     </div>
                     <div className="col-sm-9 col-xs-9 reply-main msg">
-                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }}></textarea>
+                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }></textarea>
                     </div>
                     <div className="col-sm-1 col-xs-1 reply-recording">
                         <i className="fa fa-microphone fa-2x msg" aria-hidden="true"></i>
@@ -233,7 +211,6 @@ class Chat extends Component {
                     <div className="col-sm-1 col-xs-1 reply-send msg" onClick={() => {
                         let type = this.state.type;
                         let text = this.messageText.value;
-                        console.log(text);
                         if (type === 'rsa') {
                             this.rsaEncrypt(text);
                         } else {
@@ -251,6 +228,7 @@ class Chat extends Component {
 
 const mapStatetoProps = state => ({
     unreadList: state.Notification.unreadList,
+    transmissible: state.Notification.transmissible,
 })
 
 const mapDispatchtoProps = dispatch => ({
@@ -277,6 +255,15 @@ const mapDispatchtoProps = dispatch => ({
             type: "UNREAD_SAVE",
             payload: {
                 unreadList: unreadList,
+            }
+        })
+    },
+
+    saveUserStatus: (userStatusList) => {
+        dispatch({
+            type: "USER_STATUS_SAVE",
+            payload: {
+                userStatusList: userStatusList,
             }
         })
     },

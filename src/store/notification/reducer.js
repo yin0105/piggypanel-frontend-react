@@ -4,10 +4,11 @@ const initialState = {
     opened: false,
     unreadCount: 0,
     unreadList: [],
+    userStatusList: [],
+    transmissible: false,
 }
 
 const Notification = (state = initialState, action) => {
-    console.log("notification: ", state.opened, action.type);
     switch (action.type) {
         case "CHAT_OPEN":
             state = {
@@ -44,7 +45,19 @@ const Notification = (state = initialState, action) => {
                 ...state,
                 unreadList: action.payload.unreadList,
             }
+            break;
+        case "USER_STATUS_SAVE":
+            state = {
+                ...state,
+                userStatusList: action.payload.userStatusList,
+            }
             break;   
+        case "SET_TRANSMISSIBLE":
+            state = {
+                ...state,
+                transmissible: action.payload.transmissible,
+            }
+            break;
         default:
             state = { ...state };
             break;

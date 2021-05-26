@@ -55,21 +55,21 @@ class FirebaseAuthBackend {
         res=>  {  
           console.log("res = ", res)        ;
           if( res.key) {
-            if(res.group.indexOf("Agent") !== -1){
-              resolve(                
-                sessionStorage.setItem("authUser", JSON.stringify(res.key)),
-                sessionStorage.setItem('authName', JSON.stringify(res.authName)),
-                sessionStorage.setItem('username', JSON.stringify(res.username)),
-                sessionStorage.setItem('authId', JSON.stringify(res.id)),
-                sessionStorage.setItem('access', 'agent')
-              );
-            } else if(res.is_superuser){
+            if(res.is_superuser){
               resolve(
                 sessionStorage.setItem("authUser", JSON.stringify(res.key)),
                 sessionStorage.setItem('authName', JSON.stringify(res.authName)),
                 sessionStorage.setItem('username', JSON.stringify(res.username)),
                 sessionStorage.setItem('authId', JSON.stringify(res.id)),
                 sessionStorage.setItem('access', 'superuser')
+              );
+            } else if(res.group.length > 0){
+              resolve(                
+                sessionStorage.setItem("authUser", JSON.stringify(res.key)),
+                sessionStorage.setItem('authName', JSON.stringify(res.authName)),
+                sessionStorage.setItem('username', JSON.stringify(res.username)),
+                sessionStorage.setItem('authId', JSON.stringify(res.id)),
+                sessionStorage.setItem('access', res.group[0].toLowerCase())
               );
             } else {
               reject("Unauthorized access!"); 

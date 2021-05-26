@@ -20,10 +20,8 @@ class ContactList extends Component {
     }
 
     componentDidMount() {
-        console.log("protocol = ", window.location.protocol);
-        axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users', {'headers': this.headers})
+        axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
             .then(response => {
-                console.log("Contact List (Users) = ", response);
                 this.setState({users: response.data});
             })
             .catch(error => console.log(error, 1))

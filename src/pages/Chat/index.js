@@ -34,17 +34,16 @@ class ChatMain extends Component {
 
   componentDidMount() {   
     
-    console.log("headers = ", this.headers) ;
     axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/chats/', {'headers': this.headers})
       .then(response => {
-        console.log("=== response OK", response.data);
         this.setState({
           chats: response.data,
           mainChat: response.data[0]
         })
       })
       .catch(error => console.log(error,4));
-    axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/' + sessionStorage.getItem('authId') + '/', {'headers': this.headers})
+    axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
+    // axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/' + sessionStorage.getItem('authId') + '/', {'headers': this.headers})
       .then(response => this.setState({
         user: response.data
       }))
@@ -64,7 +63,6 @@ class ChatMain extends Component {
                       this.setState({mainChat: chat})
                       axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/chats/', {'headers': this.headers})
                         .then(response => {
-                          console.log("== chats (2) => ",  response.data);
                           this.setState({
                             chats: response.data
                           })
