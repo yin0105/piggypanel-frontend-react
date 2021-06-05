@@ -13,7 +13,7 @@ class CharStatusMenu extends Component {
       menu: false,
       status: 'on',
       hideDropdown: true,
-      socket: new WebSocket('ws://' + window.location.hostname +':8000/chat/stream/'),
+      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +':8000/chat/stream/'),
     };
 
     this.toggle = this.toggle.bind(this);
