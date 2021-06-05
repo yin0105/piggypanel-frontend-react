@@ -34,7 +34,7 @@ class ChatMain extends Component {
 
   componentDidMount() {   
     
-    axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/chats/', {'headers': this.headers})
+    axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.PORT_NUMBER}/chats/', {'headers': this.headers})
       .then(response => {
         this.setState({
           chats: response.data,
@@ -61,7 +61,7 @@ class ChatMain extends Component {
                 <ChatList chats={this.state.chats} userUnread={this.state.userUnread} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
                 <ContactList className="msg" updateMainChat={chat => {
                       this.setState({mainChat: chat})
-                      axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/chats/', {'headers': this.headers})
+                      axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.PORT_NUMBER}/chats/', {'headers': this.headers})
                         .then(response => {
                           this.setState({
                             chats: response.data
