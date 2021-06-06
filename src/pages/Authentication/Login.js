@@ -31,7 +31,7 @@ class Login extends Component {
 
   render() {
     console.log(`url = ${process.env.REACT_APP_API_URL}`);
-    console.log(`port = ${process.env.REACT_APP_PORT_NUMBER}/chat`);
+    console.log(`port = ${process.env.REACT_APP_WEBSOCKET_PORT}/chat`);
     return (
       <React.Fragment>
         <div className="home-btn d-none d-sm-block">
