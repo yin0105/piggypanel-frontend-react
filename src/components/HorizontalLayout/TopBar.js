@@ -23,7 +23,7 @@ class TopBar extends Component {
           id: window.chat
       },
       type: 'rsa',
-      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_WEBSOCKET_PORT}/chat/stream/`),      
+      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_WEBSOCKET_PORT}/ws/chat/stream/`),      
       publicKey: new JSEncrypt(),
       opened: false,
     };
