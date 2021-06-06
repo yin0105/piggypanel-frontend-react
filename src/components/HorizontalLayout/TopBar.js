@@ -1,26 +1,17 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-// import images
 import logodarkImg from "../../assets/images/logo-dark.png";
 import logosmImg from "../../assets/images/logo-sm.png";
 import logolightImg from "../../assets/images/logo-light.png";
 
-// Import other Dropdown
-// import LanguageDropdown from "../../components/LanguageDropdown";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileMenu from "../../components/ProfileMenu";
-// import { Button } from "reactstrap";
 import { connect } from "react-redux";
 import forge from 'node-forge';
-// import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 import { removeQuotes } from '../../assets/js/chatMain';
 import axios from 'axios';
-// import { Icon, InlineIcon } from '@iconify/react';
-// import messageCircleOutline from '@iconify-icons/eva/message-circle-outline';
-// import { MessageCircle } from '@dcp-ui/icons.message-circle'
-
 
 
 class TopBar extends Component {
@@ -32,7 +23,7 @@ class TopBar extends Component {
           id: window.chat
       },
       type: 'rsa',
-      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.PORT_NUMBER}/chat/stream/`),      
+      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT_NUMBER}/chat/stream/`),      
       publicKey: new JSEncrypt(),
       opened: false,
     };

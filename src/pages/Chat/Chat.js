@@ -19,7 +19,7 @@ class Chat extends Component {
                 id: window.chat
             },
             type: 'rsa',
-            socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.PORT_NUMBER}/chat/stream/`),
+            socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT_NUMBER}/chat/stream/`),
             publicKey: new JSEncrypt(),
             opened: false,
             trasmissible: false,
@@ -191,7 +191,7 @@ class Chat extends Component {
                 <div className="row heading msg">
                     <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
                         <div className="heading-avatar-icon msg">
-                            <img src={require('../../assets/images/avatar/avatar-2.png')} alt="avatar" className="msg" />
+                            <img src={`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT_NUMBER}/media/avatar-2.png`} alt="avatar" className="msg" />
                         </div>
                     </div>
                     <div className="col-sm-8 col-xs-7 heading-name msg">

@@ -6,6 +6,8 @@ import "../../assets/css/chat-room.css";
 import { removeQuotes } from '../../assets/js/chatMain';
 import { connect } from "react-redux";
 
+import avatarImg1 from "../../assets/images/avatar/avatar-1.png";
+
 class CharStatusMenu extends Component {
   constructor(props) {
     super(props);
@@ -13,7 +15,7 @@ class CharStatusMenu extends Component {
       menu: false,
       status: 'on',
       hideDropdown: true,
-      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.PORT_NUMBER}/chat/stream/`),
+      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT_NUMBER}/chat/stream/`),
     };
 
     this.toggle = this.toggle.bind(this);
@@ -97,7 +99,7 @@ class CharStatusMenu extends Component {
             onClick={()=> {this.setState({hideDropdown: false}); console.log(this.state.hideDropdown)}}
           >
             <div className="heading-avatar-icon msg">
-                <img src={require('../../assets/images/avatar/avatar-1.png')}  alt="avatar" className="msg"/>
+                <img src={avatarImg1}  alt="avatar" className="msg"/>
                 <span className={`badge badge-danger badge-pill badge-me ${this.state.status==="away"? "badge-status-away":""}`}> </span>
             </div>
           </DropdownToggle>

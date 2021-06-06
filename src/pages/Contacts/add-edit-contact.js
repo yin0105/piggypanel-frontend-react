@@ -115,7 +115,7 @@ class AddEditContact  extends Component {
     fetchLayout() {
         const { fields } = this.state;
         if (!fields) {
-            fetch(`${process.env.REACT_APP_API_URL}:${process.env.PORT_NUMBER}/api/contacts/contactsaddeditlayout/?page_size=100`, {
+            fetch(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT_NUMBER}/api/contacts/contactsaddeditlayout/?page_size=100`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1') }
             })
@@ -155,7 +155,7 @@ class AddEditContact  extends Component {
             this.state.navigation_state.items.map((item, i) => {
 
                 if (this.state.contact_id == item.id) {
-                    fetch(`${process.env.REACT_APP_API_URL}:${process.env.PORT_NUMBER}/api/contacts/` + this.state.contact_id + '/', {
+                    fetch(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT_NUMBER}/api/contacts/` + this.state.contact_id + '/', {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1') }
                     })
@@ -182,7 +182,7 @@ class AddEditContact  extends Component {
         }
         else {
 
-            fetch(`${process.env.REACT_APP_API_URL}:${process.env.PORT_NUMBER}/api/contacts/` + this.state.contact_id + '/', {
+            fetch(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT_NUMBER}/api/contacts/` + this.state.contact_id + '/', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1') }
             })
@@ -376,7 +376,7 @@ class AddEditContact  extends Component {
         // this.fetchRecord();
 
         return new Promise((resolve, reject) => {
-            fetch(`${process.env.REACT_APP_API_URL}:${process.env.PORT_NUMBER}/api/contacts/` + contact_id + '/', {
+            fetch(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT_NUMBER}/api/contacts/` + contact_id + '/', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1') },
                 body: JSON.stringify(submitdata)
