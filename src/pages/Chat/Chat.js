@@ -191,7 +191,7 @@ class Chat extends Component {
                 <div className="row heading msg">
                     <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
                         <div className="heading-avatar-icon msg">
-                            <img src={`${process.env.REACT_APP_API_URL}/media/avatar-2.png`} alt="avatar" className="msg" />
+                            <img src={`${process.env.REACT_APP_API_URL}/static/img/avatar-2.png`} alt="avatar" className="msg" />
                         </div>
                     </div>
                     <div className="col-sm-8 col-xs-7 heading-name msg">
