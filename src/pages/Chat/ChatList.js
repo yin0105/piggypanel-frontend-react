@@ -171,7 +171,7 @@ class ChatList extends Component {
                         }}>
                             <div className="col-sm-3 col-xs-3 sideBar-avatar msg">
                                 <div className="avatar-icon msg">
-                                    <img src={`${process.env.REACT_APP_API_URL}/media/avatar-2.png`}  alt='avatar' style={ userStatusStye }/>
+                                    <img src={`${process.env.REACT_APP_API_URL}/static/img/avatar-2.png`}  alt='avatar' style={ userStatusStye }/>
                                     <span className="badge badge-danger badge-pill" style={{ display: user.unread > 0 ? 'block' : 'none'}}>{user.unread}</span>
                                     <span className={`badge badge-danger badge-pill badge-connect ${badge_style}`}> </span>
                                 </div>
