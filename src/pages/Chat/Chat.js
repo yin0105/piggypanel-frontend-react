@@ -146,11 +146,11 @@ class Chat extends Component {
     }
 
     rsaEncrypt(text) {
-        let encryptedMessage = this.state.publicKey.encrypt(text, "RSA-OAEP", {
-            md: forge.md.sha256.create(),
-            mgf1: forge.mgf1.create()
-        });
-        let messageBase64 = forge.util.encode64(encryptedMessage);
+        // let encryptedMessage = this.state.publicKey.encrypt(text, "RSA-OAEP", {
+        //     md: forge.md.sha256.create(),
+        //     mgf1: forge.mgf1.create()
+        // });
+        // let messageBase64 = forge.util.encode64(encryptedMessage);
         let message = {
             command: 'send',
             chat: this.state.chat.id,

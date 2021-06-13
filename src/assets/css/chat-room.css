@@ -528,7 +528,7 @@ body.msg {
 .avatar-icon.msg .badge {
   position: absolute;
   top: 0px;
-  right: 25px;
+  left: 35px;
   display: block;
   height: 18px;
   width: 18px;
