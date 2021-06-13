@@ -42,6 +42,9 @@ class FirebaseAuthBackend {
    */
   loginUser = (email, password) => {
     return new Promise((resolve, reject) => {
+      console.log("protocol = ", window.location.protocol);
+      console.log("hostname = ", window.location.hostname);
+      console.log("port = ", process.env.REACT_APP_PORT);
       fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/rest-auth/authenticate/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
