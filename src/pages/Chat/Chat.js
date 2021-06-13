@@ -8,6 +8,7 @@ import { removeQuotes } from '../../assets/js/chatMain';
 import '../../assets/css/chat-room.css';
 import { connect } from "react-redux";
 import axios from 'axios';
+import { scryRenderedDOMComponentsWithTag } from 'react-dom/test-utils';
 
 
 class Chat extends Component {
@@ -19,7 +20,7 @@ class Chat extends Component {
                 id: window.chat
             },
             type: 'rsa',
-            socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_WEBSOCKET_PORT}/ws/chat/stream/`),
+            socket: new WebSocket((window.location.protocol=='https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT}/ws/chat/stream/`),
             publicKey: new JSEncrypt(),
             opened: false,
             trasmissible: false,
@@ -29,6 +30,12 @@ class Chat extends Component {
 
     headers = { 
         'Authorization': 'token ' + removeQuotes(sessionStorage.getItem('authUser')),
+    }
+
+    handleChatTextKeyUp = e => {
+        if (e.keyCode === 13 && !e.ctrlKey && !e.shiftKey) {
+            this.sendChat();
+        }
     }
 
     componentDidMount() {
@@ -104,7 +111,7 @@ class Chat extends Component {
             //     if (!updated) {
             //         userStatusList.append(data);
             //     }
-            //     console.log(userStatusList)
+            //     console.log(userStatusList)`
             //     this.props.saveUserStatus(userStatusList);
             //     this.setState(userStatusList);
 
@@ -113,9 +120,12 @@ class Chat extends Component {
                 let read_sender = -1;
                 const receiver = removeQuotes(sessionStorage.getItem("authId"));
                 if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
-                    let conversation = this.state.chat.messages;
-                    conversation.push(data.message)
-                    this.setState({messages: conversation});
+                    let chat = this.state.chat;
+                    let conversation = chat.messages;
+                    conversation.push(data.message);
+                    chat.messages = conversation;
+                    console.log("chat = ", chat);
+                    // this.setState({chat: chat});
                     if (this.props.user == sender) {
                         read_sender = sender;
                     }
@@ -168,6 +178,17 @@ class Chat extends Component {
         this.state.opened && this.state.socket.send(JSON.stringify(message));
     }
 
+    sendChat = () => {
+        let type = this.state.type;
+        let text = this.messageText.value;
+        if (type === 'rsa') {
+            this.rsaEncrypt(text);
+        } else {
+            this.aesEncrypt(text);
+        }
+        $('#comment').val('');
+    }
+
     render() {
         const user = sessionStorage.getItem('authId');
         const chat = this.props.chat;
@@ -176,22 +197,41 @@ class Chat extends Component {
             return <div className="col-sm-8 conversation"></div>
         }
         if (chat) {
-            messages = chat.messages.map(message =>{ console.log("#", user, "#", message.sender.id + "#", typeof(user), typeof(message.sender.id)); return <Message 
+            messages = chat.messages.map(message =>{ 
+                let diff_time = "";
+                if (message.date_sent != null) {
+                    const diff_time_int = Math.floor((new Date().getTime() - Date.parse(message.date_sent)) / 1000);
+                    if (diff_time_int < 1) {
+                        diff_time = "just now";
+                    } else if (diff_time_int < 60) {
+                        diff_time = diff_time_int + " seconds ago";
+                    } else if (diff_time_int < 3600) {
+                        diff_time = Math.floor(diff_time_int / 60) + " minutes ago";
+                    } else if (diff_time_int < 86400) {
+                        diff_time = Math.floor(diff_time_int / 3600) + " hours ago";
+                    } else if (diff_time_int < 86400 * 30) {
+                        diff_time = Math.floor(diff_time_int / 86400) + " days ago";
+                    } else if (diff_time_int < 86400 * 365) {
+                        diff_time = Math.floor(diff_time_int / (86400 * 30)) + " months ago";
+                    } else {
+                        diff_time = Math.floor(diff_time_int / (86400 * 365)) + " years ago";
+                    }
+                }
+                return <Message 
                 key={message.id} 
                 classType={message.sender.id != user ? 'receiver' : 'sender'} 
                 text={message.text} 
-                date_sent={message.diff_time} 
+                date_sent={diff_time} 
             />});
         }
 
-        console.log(" == ", !this.props.transmissible);
         return (
             
             <div className="col-sm-8 conversation msg">
                 <div className="row heading msg">
                     <div className="col-sm-2 col-md-1 col-xs-3 heading-avatar msg">
                         <div className="heading-avatar-icon msg">
-                            <img src={`${process.env.REACT_APP_API_URL}/static/img/avatar-2.png`} alt="avatar" className="msg" />
+                            <img src={`${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_PORT}/static/img/avatar-2.png`} alt="avatar" className="msg" />
                         </div>
                     </div>
                     <div className="col-sm-8 col-xs-7 heading-name msg">
@@ -222,20 +262,10 @@ class Chat extends Component {
                         <i className="fa fa-smile-o fa-2x msg"></i>
                     </div>
                     <div className="col-sm-9 col-xs-9 reply-main msg">
-                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }></textarea>
-                    </div>
-                    <div className="col-sm-1 col-xs-1 reply-recording">
-                        <i className="fa fa-microphone fa-2x msg" aria-hidden="true"></i>
+                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }  onKeyUp={this.handleChatTextKeyUp}></textarea>
                     </div>
                     <div className="col-sm-1 col-xs-1 reply-send msg" onClick={() => {
-                        let type = this.state.type;
-                        let text = this.messageText.value;
-                        if (type === 'rsa') {
-                            this.rsaEncrypt(text);
-                        } else {
-                            this.aesEncrypt(text);
-                        }
-                        $('#comment').val('');
+                        this.sendChat();
                     }}>
                         <i className="fa fa-paper-plane fa-2x msg" aria-hidden="true"></i>
                     </div>

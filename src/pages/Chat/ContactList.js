@@ -61,7 +61,6 @@ class ContactList extends Component {
                             data.append('sender', sessionStorage.getItem('authId'));
                             axios.post(window.location.protocol + '//' + window.location.hostname + ':8000/create-chat/', data, {'headers': this.headers})
                                 .then(response => {
-                                    console.log(response)
                                     this.props.updateMainChat(response.data)
                                 })
                                 .catch(error => console.log(error, 2));

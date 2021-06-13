@@ -33,7 +33,7 @@ body.msg {
   background-color: #f7f7f7;
   height: calc(100vh - 220px);
   overflow: hidden;
-  margin: 0;
+  margin: 0 !important;
   padding: 0;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .06), 0 2px 5px 0 rgba(0, 0, 0, .2);
   display: -webkit-box;
@@ -469,21 +469,6 @@ body.msg {
   box-shadow: none;
 }
 
-.avatar-icon.msg .badge {
-  position: absolute;
-  top: 0px;
-  right: 25px;
-  display: block;
-  height: 18px;
-  width: 18px;
-  line-height: 16px;
-  border-radius: 9px;
-  background-color: #ec4561;
-  color: white;
-  text-align: center;
-  padding: 0px;
-}
-
 .noti-icon .badge  {
   position: absolute;
   top: 0px;
@@ -540,10 +525,25 @@ body.msg {
   padding: 0px;
 }
 
-.avatar-icon.msg .badge.badge-connect {
+.avatar-icon.msg .badge {
   position: absolute;
-  top: 36px;
-  right: 30px;
+  top: 0px;
+  right: 25px;
+  display: block;
+  height: 18px;
+  width: 18px;
+  line-height: 16px;
+  border-radius: 9px;
+  background-color: #ec4561;
+  color: white;
+  text-align: center;
+  padding: 0px;
+}
+
+.avatar-icon.msg .badge.badge-connect {
+  position: relative;
+  top: -12px;
+  right: -35px;
   display: block;
   height: 14px;
   width: 14px;

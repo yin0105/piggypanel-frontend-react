@@ -126,7 +126,7 @@ class Leads extends Component{
   }
 
   fetchLayout(){
-    fetch(`${process.env.REACT_APP_API_URL}/api/leads/leadsbrowselayout/?page_size=100`, {
+    fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/api/leads/leadsbrowselayout/?page_size=100`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')}
     })
@@ -215,7 +215,7 @@ class Leads extends Component{
       qs += '&search='+searchText
     }
 
-    fetch(`${process.env.REACT_APP_API_URL}/api/leads${qs}`, {
+    fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/api/leads${qs}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')}
     })
@@ -368,7 +368,7 @@ class Leads extends Component{
   deleteSelected = () => {
     const {selected} =  this.state
 
-    fetch(`${process.env.REACT_APP_API_URL}/api/leads/delete-leads/`, {
+    fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/api/leads/delete-leads/`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')},
       body: JSON.stringify(selected)

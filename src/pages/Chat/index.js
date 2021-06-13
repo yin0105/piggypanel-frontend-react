@@ -34,7 +34,7 @@ class ChatMain extends Component {
 
   componentDidMount() {   
     
-    axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_WEBSOCKET_PORT}/chats/', {'headers': this.headers})
+    axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_PORT}/chats/', {'headers': this.headers})
       .then(response => {
         this.setState({
           chats: response.data,
@@ -56,12 +56,16 @@ class ChatMain extends Component {
     //     <Redirect to='/dashboard'/>
     //   );
     // } else {
-      return <div className="app-one msg m-3"> 
+      return (
+        // <React.Fragment>
+        // <div className="offset-lg-6 col-lg-6">
+          <div className="app-one msg m-3"> 
+            
               <div key={1} className="col-sm-4 side msg">
                 <ChatList chats={this.state.chats} userUnread={this.state.userUnread} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
                 <ContactList className="msg" updateMainChat={chat => {
-                      this.setState({mainChat: chat})
-                      axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_WEBSOCKET_PORT}/chats/', {'headers': this.headers})
+                      this.setState({mainChat: chat});
+                      axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_PORT}/chats/', {'headers': this.headers})
                         .then(response => {
                           this.setState({
                             chats: response.data
@@ -73,8 +77,12 @@ class ChatMain extends Component {
                   side_two_left={ this.state.side_two_left }
                 />
               </div>
+              {/* <Chat key={2} chat={this.state.mainChat}  className="msg" />, */}
               <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateUserUnread={(unreadList, sentTime) => {this.setState({userUnread: [unreadList, sentTime]})}} className="msg" />,
             </div>
+        // </div>
+        // </React.Fragment>
+      );
     // }
   }
 }

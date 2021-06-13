@@ -196,7 +196,7 @@ const authProtectedRoutes = [
   { path: "/pages-faq", component: PagesFaq },
 
   // Chat Pages
-  { path: "/chat", component: Chat },
+  // { path: "/chat", component: Chat },
 
   { path: "/dashboard", component: Dashboard },
 

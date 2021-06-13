@@ -40,23 +40,19 @@ class ChatList extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("nextProps = ", nextProps);
         if (nextProps.userStatusList && nextProps.userStatusList.length > 0) {
             this.setState({unreadList: nextProps.unreadList});
             this.setState({userStatusList: nextProps.userStatusList});
-            console.log("nextProps.userStatusList = ", nextProps.userStatusList);
             this.updateUserListWithUnreadList(nextProps.unreadList, nextProps.userStatusList);
         }
     }
 
     componentWillUpdate(nextProps, nextState){
-        console.log("== componentWillUpdate");
         // You cannot use this.setState() in this method
     }
     
     // Called IMMEDIATELY AFTER a render
     componentDidUpdate(prevProps, prevState){
-        console.log("== componentDidUpdate");
     }
 
     updateUserListWithUnreadList = (unreadList, userStatusList) => {
@@ -86,8 +82,6 @@ class ChatList extends Component {
     }
         
     render() {  
-        console.log("this.props.userStatusList = ", this.props.userStatusList);
-        
         let { users } = this.state;
         let totalUnread = 0;
         for (const i in users) {
@@ -113,10 +107,7 @@ class ChatList extends Component {
             <div className="side-one msg">
                 <div className="row heading msg" style={{ alignItems: 'center' }}>
                     <div className="col-sm-3 col-xs-3 heading-avatar msg">
-                        {/* <div className="heading-avatar-icon msg">
-                            <img src={require('../../assets/images/avatar/avatar-1.png')}  alt="avatar" className="msg"/> */}
                         <ChatStatusMenu updateUserStatus={userStatusList => this.setState(userStatusList)}/>
-                        {/* </div> */}
                     </div>
                     <div className="col-sm-6 col-xs-1 heading-name  msg">
                         <a className="heading-name-meta msg">{removeQuotes(sessionStorage.getItem('username'))}</a>
@@ -124,9 +115,6 @@ class ChatList extends Component {
                     <div className="col-sm-2 col-xs-2 heading-compose  pull-right msg">
                         <i className="fa fa-comments fa-2x  pull-right msg" aria-hidden="true" onClick={() => {this.props.updateSideTwoLeft()}}></i>
                     </div>
-                    {/* <div className="col-sm-1 col-xs-1  heading-dot  pull-right msg">
-                        <a href="/logout" className="msg"><i className="fa fa-ellipsis-v fa-2x  pull-right msg" aria-hidden="true"></i></a>
-                    </div> */}
                 </div>
 
                 <div className="row searchBox msg">
@@ -169,14 +157,14 @@ class ChatList extends Component {
                                 "left": "-100%"
                             });
                         }}>
-                            <div className="col-sm-3 col-xs-3 sideBar-avatar msg">
-                                <div className="avatar-icon msg">
-                                    <img src={`${process.env.REACT_APP_API_URL}/static/img/avatar-2.png`}  alt='avatar' style={ userStatusStye }/>
+                            <div className="col-sm-4 sideBar-avatar msg">
+                                <div className="avatar-icon msg float-left">
+                                    <img src={`${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_PORT}/static/img/avatar-2.png`}  alt='avatar' style={ userStatusStye }/>
                                     <span className="badge badge-danger badge-pill" style={{ display: user.unread > 0 ? 'block' : 'none'}}>{user.unread}</span>
                                     <span className={`badge badge-danger badge-pill badge-connect ${badge_style}`}> </span>
                                 </div>
                             </div>
-                            <div className="col-sm-9 col-xs-9 sideBar-main msg">
+                            <div className="col-sm-8 sideBar-main msg">
                                 <div className="row msg">
                                     <div className="col-sm-8 col-xs-8 sideBar-name msg">
                                         <span className="name-meta msg">{user.username}</span>

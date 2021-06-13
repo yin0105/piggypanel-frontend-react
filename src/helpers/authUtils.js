@@ -42,8 +42,7 @@ class FirebaseAuthBackend {
    */
   loginUser = (email, password) => {
     return new Promise((resolve, reject) => {
-      console.log("REACT_APP_API_URL = ", process.env.REACT_APP_API_URL);
-      fetch(`${process.env.REACT_APP_API_URL}/rest-auth/authenticate/`, {
+      fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/rest-auth/authenticate/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ username: email, password: password })
@@ -93,7 +92,7 @@ class FirebaseAuthBackend {
    */
   forgetPassword = email => {
     return new Promise((resolve, reject) => {
-      fetch(`${process.env.REACT_APP_API_URL}/rest-auth/password/reset/`, {
+      fetch(`${window.location.protocol}://${window.location.hostname}:${process.env.REACT_APP_PORT}/rest-auth/password/reset/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ email: email })

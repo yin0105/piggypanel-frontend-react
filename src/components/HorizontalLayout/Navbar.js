@@ -50,7 +50,7 @@ class Navbar extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="topnav">
+        <div className="topnav" style={{zIndex: "2"}}>
           <div className="container-fluid">
             <nav className="navbar navbar-light navbar-expand-lg topnav-menu">
               <Collapse

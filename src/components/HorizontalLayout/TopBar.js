@@ -18,12 +18,12 @@ class TopBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chat: {
-          messages: [],
-          id: window.chat
-      },
+      // chat: {
+      //     messages: [],
+      //     id: window.chat
+      // },
       type: 'rsa',
-      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_WEBSOCKET_PORT}/ws/chat/stream/`),      
+      socket: new WebSocket((window.location.protocol=='https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT}/ws/chat/stream/`),      
       publicKey: new JSEncrypt(),
       opened: false,
     };
@@ -39,7 +39,6 @@ class TopBar extends Component {
   }
 
   componentWillUnmount() {
-    console.log("Topbar :: Chat :: componentWillUnmount()");
     this.state.socket.close();
   }
 
@@ -60,12 +59,10 @@ class TopBar extends Component {
   }
 
   setupWebsocket() {
-    console.log("Topbar :: Chat :: setupWebsocket()");
     let websocket = this.state.socket;
     try {
         websocket.onopen = () => {
             this.setState({opened: true});
-            console.log('Topbar :: Chat :: open');
             // let message = {
             //     command: 'prejoin',
             //     chat: this.state.chat.id,
@@ -81,7 +78,6 @@ class TopBar extends Component {
     websocket.onmessage = (evt) => {
         let data = JSON.parse(evt.data)
         if ('key' in data) {
-            console.log("== OnMessage() =>", data)
             this.setState({
                 publicKey: forge.pki.publicKeyFromPem(data.key)
             });
@@ -90,11 +86,11 @@ class TopBar extends Component {
         }
         else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
             let sender = data.receiver.split("_")[1];
-            console.log("new message = ", data.message);
-            console.log("receiver = ", data.receiver);
-            console.log("sender = ", sender);
-            console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
-            console.log("oppo = ", this.props.user);
+            // console.log("new message = ", data.message);
+            // console.log("receiver = ", data.receiver);
+            // console.log("sender = ", sender);
+            // console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
+            // console.log("oppo = ", this.props.user);
             
             // if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
             //     let conversation = this.state.chat.messages;
@@ -127,7 +123,6 @@ class TopBar extends Component {
    * Toggles the sidebar
    */
   toggleRightbar() {
-    console.log("OK !");
     this.props.toggleRightSidebar();
   }
 
@@ -225,14 +220,11 @@ class TopBar extends Component {
                 </button>
               </div>
     */}
-              {/* <NotificationDropdown /> */}
-              <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
-                {/* <Icon icon={messageCircleOutline} /> */}
-                {/* <i className="mdi mdi-bell-outline"></i> */}
+              <NotificationDropdown />
+              {/* <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
                 <i className="fa fa-comments fa-2x  pull-right msg-outline" aria-hidden="true"></i>
-                {/* <MessageCircle/> */}
                 <span className="badge badge-danger badge-pill" style={{ display: this.props.unread > 0 ? 'block' : 'none'}}>{this.props.unread}</span>
-              </button>
+              </button> */}
 
               <ProfileMenu />
 {/*}

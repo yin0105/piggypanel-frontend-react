@@ -15,7 +15,7 @@ class CharStatusMenu extends Component {
       menu: false,
       status: 'on',
       hideDropdown: true,
-      socket: new WebSocket(('https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_WEBSOCKET_PORT}/ws/chat/stream/`),
+      socket: new WebSocket((window.location.protocol=='https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT}/ws/chat/stream/`),
     };
 
     this.toggle = this.toggle.bind(this);
@@ -30,7 +30,6 @@ class CharStatusMenu extends Component {
     try {
         websocket.onopen = () => {
             this.setState({opened: true});
-            console.log('ChatStatusMenu :: Chat :: open');
         };
     } catch (e) {
         console.log("== socket open error: ", e)
@@ -43,7 +42,6 @@ class CharStatusMenu extends Component {
           let updated = false;
 
           for (let i in userStatusList) {
-              console.log("== userstatus : ", userStatusList[i]);
               if (userStatusList[i].user == data.user) {
                   userStatusList[i].status = data.user_status;
                   updated = true;
@@ -54,7 +52,6 @@ class CharStatusMenu extends Component {
           if (!updated) {
               userStatusList.append(data);
           }
-          console.log(userStatusList)
           this.props.saveUserStatus(userStatusList);
           this.setState(userStatusList);
           this.props.updateUserStatus(userStatusList);
@@ -96,7 +93,7 @@ class CharStatusMenu extends Component {
             id="page-header-notifications-dropdown"
             tag="button"
             style={{ height: 'auto', padding: '0px' }}
-            onClick={()=> {this.setState({hideDropdown: false}); console.log(this.state.hideDropdown)}}
+            onClick={()=> {this.setState({hideDropdown: false});}}
           >
             <div className="heading-avatar-icon msg">
                 <img src={avatarImg1}  alt="avatar" className="msg"/>
