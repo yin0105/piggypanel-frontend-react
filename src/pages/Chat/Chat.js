@@ -38,7 +38,7 @@ class Chat extends Component {
         }
     }
 
-    handleChatTextClick = e => {
+    clearUnreadBadge = e => {
         if (this.props.user) {
             axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${this.props.user}&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
                 .then(response => {
@@ -105,26 +105,7 @@ class Chat extends Component {
             if ('key' in data) {
                 this.setState({
                     publicKey: forge.pki.publicKeyFromPem(data.key)
-                });            
-            // } else if ('user_status' in data) {
-            //     let userStatusList = this.props.userStatusList;
-            //     let updated = false;
-
-            //     for (let i in userStatusList) {
-            //         console.log("== userstatus : ", userStatusList[i]);
-            //         if (userStatusList[i].user == data.user) {
-            //             userStatusList[i].status = data.user_status;
-            //             updated = true;
-            //             break;
-            //         }
-            //     }
-
-            //     if (!updated) {
-            //         userStatusList.append(data);
-            //     }
-            //     console.log(userStatusList)`
-            //     this.props.saveUserStatus(userStatusList);
-            //     this.setState(userStatusList);
+                });
 
             } else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
                 let sender = data.receiver.split("_")[1];
@@ -135,8 +116,8 @@ class Chat extends Component {
                     let conversation = chat.messages;
                     conversation.push(data.message);
                     chat.messages = conversation;
-                    console.log("chat = ", chat);
                     // this.setState({chat: chat});
+                    
                     // if (this.props.user == sender) {
                     //     read_sender = sender;
                     // }
@@ -273,7 +254,7 @@ class Chat extends Component {
                         <i className="fa fa-smile-o fa-2x msg"></i>
                     </div>
                     <div className="col-sm-9 col-xs-9 reply-main msg">
-                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }  onKeyUp={this.handleChatTextKeyUp} onClick={this.handleChatTextClick}></textarea>
+                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }  onKeyUp={this.handleChatTextKeyUp} onClick={this.clearUnreadBadge} onChange={this.clearUnreadBadge}></textarea>
                     </div>
                     <div className="col-sm-1 col-xs-1 reply-send msg" onClick={() => {
                         this.sendChat();
