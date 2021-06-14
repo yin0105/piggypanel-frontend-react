@@ -86,21 +86,8 @@ class TopBar extends Component {
         }
         else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
             let sender = data.receiver.split("_")[1];
-            // console.log("new message = ", data.message);
-            // console.log("receiver = ", data.receiver);
-            // console.log("sender = ", sender);
-            // console.log("user = ", removeQuotes(sessionStorage.getItem("authId")));
-            // console.log("oppo = ", this.props.user);
-            
-            // if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
-            //     let conversation = this.state.chat.messages;
-            //     conversation.push(data.message)
-            //     this.setState({messages: conversation});
-            // } else {
-                
-            // }
 
-            if (!this.props.opened) {
+            if (!this.state.opened) {
               this.initUnreadCount();
             }
         }
@@ -220,7 +207,7 @@ class TopBar extends Component {
                 </button>
               </div>
     */}
-              <NotificationDropdown />
+              <NotificationDropdown  updateOpened={opened => this.setState({opened: opened})}/>
               {/* <button className="btn header-item noti-icon waves-effect" onClick={() => this.props.openChat()}>
                 <i className="fa fa-comments fa-2x  pull-right msg-outline" aria-hidden="true"></i>
                 <span className="badge badge-danger badge-pill" style={{ display: this.props.unread > 0 ? 'block' : 'none'}}>{this.props.unread}</span>

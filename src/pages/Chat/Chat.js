@@ -38,6 +38,17 @@ class Chat extends Component {
         }
     }
 
+    handleChatTextClick = e => {
+        if (this.props.user) {
+            axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${this.props.user}&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
+                .then(response => {
+                    this.props.saveUnreadCount(response.data.unread);
+                    this.props.saveUserStatus(response.data.user_status);
+                })
+                .catch(error => console.log(error))
+        }
+    }
+
     componentDidMount() {
         this.props.openChat();
         this.setupWebsocket();        
@@ -126,9 +137,9 @@ class Chat extends Component {
                     chat.messages = conversation;
                     console.log("chat = ", chat);
                     // this.setState({chat: chat});
-                    if (this.props.user == sender) {
-                        read_sender = sender;
-                    }
+                    // if (this.props.user == sender) {
+                    //     read_sender = sender;
+                    // }
                 }
 
                 axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})
@@ -262,7 +273,7 @@ class Chat extends Component {
                         <i className="fa fa-smile-o fa-2x msg"></i>
                     </div>
                     <div className="col-sm-9 col-xs-9 reply-main msg">
-                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }  onKeyUp={this.handleChatTextKeyUp}></textarea>
+                        <textarea className="form-control" rows="1" id="comment" ref={text => { this.messageText = text; }} readOnly={ !this.props.transmissible }  onKeyUp={this.handleChatTextKeyUp} onClick={this.handleChatTextClick}></textarea>
                     </div>
                     <div className="col-sm-1 col-xs-1 reply-send msg" onClick={() => {
                         this.sendChat();

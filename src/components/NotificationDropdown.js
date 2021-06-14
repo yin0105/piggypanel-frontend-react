@@ -9,7 +9,8 @@ class NotificationDropdown extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menu: false
+      menu: false,
+      opened: false,
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -32,7 +33,11 @@ class NotificationDropdown extends Component {
             className="btn header-item noti-icon waves-effect"
             id="page-header-notifications-dropdown"
             tag="button"
-            onClick={() => this.props.openChat()}
+            onClick={() => {
+              const op = !this.state.opened;
+              this.props.updateOpened(op); 
+              this.setState({opened: op});
+            }}
           >
             {/* <i className="mdi mdi-bell-outline"></i> */}
             <i className="fa fa-comments fa-2x  pull-right msg-outline" aria-hidden="true"></i>
