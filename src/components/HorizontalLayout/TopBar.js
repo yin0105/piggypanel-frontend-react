@@ -43,7 +43,7 @@ class TopBar extends Component {
   }
 
   initUnreadCount = () => {
-    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=-1&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
+    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=-1&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
       .then(response => {
           const unreadList = response.data.unread;
           let totalUnread = 0;
@@ -67,7 +67,7 @@ class TopBar extends Component {
             //     command: 'prejoin',
             //     chat: this.state.chat.id,
             //     group: 'admin',
-            //     user: removeQuotes(sessionStorage.getItem("authId")),
+            //     user: sessionStorage.getItem("authId"),
             // };
             // this.state.opened && this.state.socket.send(JSON.stringify(message));
         };
@@ -84,7 +84,7 @@ class TopBar extends Component {
         // } else if ('prejoin' in data) {
         //     console.log(" == prejoin ");
         }
-        else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
+        else if ('message' in data && data.receiver.indexOf(`_${sessionStorage.getItem("authId")}_`) > -1) {
             let sender = data.receiver.split("_")[1];
 
             if (!this.state.opened) {

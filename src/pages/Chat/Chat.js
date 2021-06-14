@@ -40,7 +40,7 @@ class Chat extends Component {
 
     clearUnreadBadge = e => {
         if (this.props.user) {
-            axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${this.props.user}&receiver=${removeQuotes(sessionStorage.getItem("authId"))}`, {'headers': this.headers})
+            axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${this.props.user}&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
                 .then(response => {
                     this.props.saveUnreadCount(response.data.unread);
                     this.props.saveUserStatus(response.data.user_status);
@@ -66,7 +66,7 @@ class Chat extends Component {
             let message = {
                 command: 'join',
                 chat: nextProps.chat.id,
-                user: removeQuotes(sessionStorage.getItem("authId")),
+                user: sessionStorage.getItem("authId"),
             };
             this.state.opened && this.state.socket.send(JSON.stringify(message));
         }
@@ -92,7 +92,7 @@ class Chat extends Component {
                 //     command: 'prejoin',
                 //     chat: this.state.chat.id,
                 //     group: 'admin',
-                //     user: removeQuotes(sessionStorage.getItem("authId")),
+                //     user: sessionStorage.getItem("authId"),
                 // };
                 // this.state.opened && this.state.socket.send(JSON.stringify(message));
             };
@@ -107,11 +107,11 @@ class Chat extends Component {
                     publicKey: forge.pki.publicKeyFromPem(data.key)
                 });
 
-            } else if ('message' in data && data.receiver.indexOf(`_${removeQuotes(sessionStorage.getItem("authId"))}_`) > -1) {
+            } else if ('message' in data && data.receiver.indexOf(`_${sessionStorage.getItem("authId")}_`) > -1) {
                 let sender = data.receiver.split("_")[1];
                 let read_sender = -1;
-                const receiver = removeQuotes(sessionStorage.getItem("authId"));
-                if (this.props.user == sender || removeQuotes(sessionStorage.getItem("authId")) == sender) {
+                const receiver = sessionStorage.getItem("authId");
+                if (this.props.user == sender || sessionStorage.getItem("authId") == sender) {
                     let chat = this.state.chat;
                     let conversation = chat.messages;
                     conversation.push(data.message);
@@ -148,7 +148,7 @@ class Chat extends Component {
             chat: this.state.chat.id,
             message: text,
             // message: messageBase64,
-            user: removeQuotes(sessionStorage.getItem("authId")),
+            user: sessionStorage.getItem("authId"),
             type: this.state.type
         };
         this.state.opened && this.state.socket.send(JSON.stringify(message));

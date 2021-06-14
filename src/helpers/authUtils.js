@@ -54,7 +54,8 @@ class FirebaseAuthBackend {
         res=>  {  
           console.log("res = ", res)        ;
           if( res.key) {
-            if(res.is_superuser){
+            console.log("authId = ", JSON.stringify(res.id));
+            if(res.is_superuser){              
               resolve(
                 sessionStorage.setItem("authUser", JSON.stringify(res.key)),
                 sessionStorage.setItem('authName', JSON.stringify(res.authName)),

@@ -73,7 +73,7 @@ class CharStatusMenu extends Component {
     this.setState({hideDropdown: true, status: status, });
     let message = {
       command: 'client_status',
-      user: removeQuotes(sessionStorage.getItem("authId")),
+      user: sessionStorage.getItem("authId"),
       status: status,
     };
     this.state.socket.send(JSON.stringify(message));
