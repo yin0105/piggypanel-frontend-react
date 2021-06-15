@@ -43,7 +43,7 @@ class TopBar extends Component {
   }
 
   initUnreadCount = () => {
-    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=-1&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
+    axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=-1&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
       .then(response => {
           const unreadList = response.data.unread;
           let totalUnread = 0;

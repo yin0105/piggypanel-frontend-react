@@ -42,8 +42,8 @@ class ChatMain extends Component {
         })
       })
       .catch(error => console.log(error,4));
-    axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
-    // axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/' + sessionStorage.getItem('authId') + '/', {'headers': this.headers})
+    axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
+    // axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/' + sessionStorage.getItem('authId') + '/', {'headers': this.headers})
       .then(response => this.setState({
         user: response.data
       }))

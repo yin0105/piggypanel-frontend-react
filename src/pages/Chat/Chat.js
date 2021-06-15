@@ -40,7 +40,7 @@ class Chat extends Component {
 
     clearUnreadBadge = e => {
         if (this.props.user) {
-            axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${this.props.user}&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
+            axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${this.props.user}&receiver=${sessionStorage.getItem("authId")}`, {'headers': this.headers})
                 .then(response => {
                     this.props.saveUnreadCount(response.data.unread);
                     this.props.saveUserStatus(response.data.user_status);
@@ -123,7 +123,7 @@ class Chat extends Component {
                     // }
                 }
 
-                axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})
+                axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})
                     .then(response => {
                         this.props.saveUnreadCount(response.data.unread);
                         this.props.saveUserStatus(response.data.user_status);

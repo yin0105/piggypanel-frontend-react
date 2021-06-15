@@ -24,7 +24,7 @@ class Leads extends Component{
   }
 
   fetchLayout(){
-    fetch(`${process.env.REACT_APP_API_URL}/api/leads/leadsbrowselayout/?page_size=100`, {
+    fetch(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/api/leads/leadsbrowselayout/?page_size=100`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization':'Token '+sessionStorage.getItem("authUser").replace(/^"(.*)"$/, '$1')}
     })

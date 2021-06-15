@@ -30,7 +30,7 @@ class ChatList extends Component {
     ]
 
     componentDidMount() {
-        axios.get(window.location.protocol + '//' + window.location.hostname + ':8000/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
+        axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
             .then(response => {
                 const newUsers = response.data //sessionStorage.getItem('access')==="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
                 this.setState({users: newUsers});
@@ -139,12 +139,12 @@ class ChatList extends Component {
                             data.append('receiver', user.id);
                             data.append('sender', sessionStorage.getItem('authId'));
                             this.props.setTransmissible(user.transmissible);
-                            axios.post(window.location.protocol + '//' + window.location.hostname + ':8000/create-chat/', data, {'headers': this.headers})
+                            axios.post(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/create-chat/', data, {'headers': this.headers})
                                 .then(response => { 
                                     this.props.updateMainChat(response.data)
                                     this.props.updateUser(user.id)
                                     
-                                    axios.get(`${window.location.protocol}//${window.location.hostname}:8000/unread?sender=${user.id}&receiver=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
+                                    axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${user.id}&receiver=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
                                         .then(response_2 => {
                                             this.props.saveUnreadCount(response_2.data.unread);
                                             this.props.saveUserStatus(response_2.data.user_status);
