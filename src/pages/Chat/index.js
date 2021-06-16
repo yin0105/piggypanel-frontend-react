@@ -34,7 +34,7 @@ class ChatMain extends Component {
 
   componentDidMount() {   
     
-    axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_PORT}/chats/', {'headers': this.headers})
+    axios.get(window.location.protocol + '//' + window.location.hostname + `:${process.env.REACT_APP_PORT}/chats/`, {'headers': this.headers})
       .then(response => {
         this.setState({
           chats: response.data,
@@ -42,7 +42,7 @@ class ChatMain extends Component {
         })
       })
       .catch(error => console.log(error,4));
-    axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
+    axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
     // axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/' + sessionStorage.getItem('authId') + '/', {'headers': this.headers})
       .then(response => this.setState({
         user: response.data
@@ -65,7 +65,7 @@ class ChatMain extends Component {
                 <ChatList chats={this.state.chats} userUnread={this.state.userUnread} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
                 <ContactList className="msg" updateMainChat={chat => {
                       this.setState({mainChat: chat});
-                      axios.get(window.location.protocol + '//' + window.location.hostname + ':${process.env.REACT_APP_PORT}/chats/', {'headers': this.headers})
+                      axios.get(window.location.protocol + '//' + window.location.hostname + `:${process.env.REACT_APP_PORT}/chats/`, {'headers': this.headers})
                         .then(response => {
                           this.setState({
                             chats: response.data

@@ -20,7 +20,7 @@ class ContactList extends Component {
     }
 
     componentDidMount() {
-        axios.get(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=' + sessionStorage.getItem('authId'), {'headers': this.headers})
+        axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
             .then(response => {
                 this.setState({users: response.data});
             })
@@ -59,7 +59,7 @@ class ContactList extends Component {
                             let data = new URLSearchParams();
                             data.append('receiver', user.id);
                             data.append('sender', sessionStorage.getItem('authId'));
-                            axios.post(${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/create-chat/', data, {'headers': this.headers})
+                            axios.post(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/create-chat/`, data, {'headers': this.headers})
                                 .then(response => {
                                     this.props.updateMainChat(response.data)
                                 })
