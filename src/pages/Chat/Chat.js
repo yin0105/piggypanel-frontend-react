@@ -21,7 +21,7 @@ class Chat extends Component {
             },
             type: 'rsa',
             socket: new WebSocket((window.location.protocol=='https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT}/ws/chat/stream/`),
-            publicKey: new JSEncrypt(),
+            // publicKey: new JSEncrypt(),
             opened: false,
             trasmissible: false,
             userStatusList: [],
@@ -103,9 +103,9 @@ class Chat extends Component {
         websocket.onmessage = (evt) => {
             let data = JSON.parse(evt.data)
             if ('key' in data) {
-                this.setState({
-                    publicKey: forge.pki.publicKeyFromPem(data.key)
-                });
+                // this.setState({
+                //     publicKey: forge.pki.publicKeyFromPem(data.key)
+                // });
 
             } else if ('message' in data && data.receiver.indexOf(`_${sessionStorage.getItem("authId")}_`) > -1) {
                 let sender = data.receiver.split("_")[1];

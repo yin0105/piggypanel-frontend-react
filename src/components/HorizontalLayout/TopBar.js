@@ -24,7 +24,7 @@ class TopBar extends Component {
       // },
       type: 'rsa',
       socket: new WebSocket((window.location.protocol=='https:'?'wss://':'ws://') + window.location.hostname +`:${process.env.REACT_APP_PORT}/ws/chat/stream/`),      
-      publicKey: new JSEncrypt(),
+      // publicKey: new JSEncrypt(),
       opened: false,
     };
 
@@ -78,9 +78,9 @@ class TopBar extends Component {
     websocket.onmessage = (evt) => {
         let data = JSON.parse(evt.data)
         if ('key' in data) {
-            this.setState({
-                publicKey: forge.pki.publicKeyFromPem(data.key)
-            });
+            // this.setState({
+            //     publicKey: forge.pki.publicKeyFromPem(data.key)
+            // });
         // } else if ('prejoin' in data) {
         //     console.log(" == prejoin ");
         }
