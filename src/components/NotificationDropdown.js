@@ -53,7 +53,8 @@ class NotificationDropdown extends Component {
               </Row>
             </div> */}
 
-            <ChatMain/>
+            { this.state.opened && <ChatMain/>}
+            <></>
 
             {/* <SimpleBar style={{ height: "230px" }}>
               

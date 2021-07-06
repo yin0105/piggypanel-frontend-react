@@ -3,6 +3,7 @@ import $ from 'jquery';
 import axios from 'axios';
 import { removeQuotes } from '../../assets/js/chatMain';
 import '../../assets/css/chat-room.css';
+import { connect } from "react-redux";
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -25,6 +26,38 @@ class ContactList extends Component {
                 this.setState({users: response.data});
             })
             .catch(error => console.log(error, 1))
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.senderId > -1) {
+            if (this.props.senderId == nextProps.senderId ) return;
+            this.state.users.map(user => {
+                if (user.id == nextProps.senderId) {
+                    this.props.updateNewUser(user);
+                    console.log("updateNewUser");
+                    return
+                }
+            })
+            // this.setState({unreadList: nextProps.unreadList});
+            // this.setState({userStatusList: nextProps.userStatusList});
+            // this.updateUserListWithUnreadList(nextProps.unreadList, nextProps.userStatusList);
+        }
+
+        if (nextProps.selectedUser !== undefined && nextProps.selectedUser !== null) {
+            console.log("Not null");
+            var is_exist = false;
+            this.state.users.map(user => {
+                if (is_exist) {return;}
+                if (user.id == nextProps.selectedUser.id) {
+                    is_exist = true;
+                    return;
+                }
+            })
+            if (!is_exist) {
+                this.setState({users: [...this.state.users, nextProps.selectedUser]})
+                console.log("new user list : ", this.state)
+            }
+        }
     }
 
     render() {
@@ -55,13 +88,23 @@ class ContactList extends Component {
 
                 <div className="compose-sideBar msg">
                     { this.state.users.map(user => 
-                        <div key={user.id} className="row sideBar-body msg" onClick={() => {
+                    {   console.log("contact user: ", user.id, ", trans : ", user.transmissible);
+                        return <div key={user.id} className="row sideBar-body msg" onClick={() => {
                             let data = new URLSearchParams();
                             data.append('receiver', user.id);
                             data.append('sender', sessionStorage.getItem('authId'));
+                            this.props.setTransmissible(user.transmissible);
                             axios.post(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/create-chat/`, data, {'headers': this.headers})
                                 .then(response => {
-                                    this.props.updateMainChat(response.data)
+                                    this.props.updateMainChat(response.data, user);
+                                    this.props.updateUser(user.id)
+                                    
+                                    axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${user.id}&receiver=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
+                                        .then(response_2 => {
+                                            this.props.saveUnreadCount(response_2.data.unread);
+                                            this.props.saveUserStatus(response_2.data.user_status);
+                                        })
+                                        .catch(error => console.log(error))
                                 })
                                 .catch(error => console.log(error, 2));
                             
@@ -85,11 +128,82 @@ class ContactList extends Component {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    })}
                 </div>
             </div>
         );
     }
 }
 
-export default ContactList;
+const mapStatetoProps = state => ({
+    unread: state.Notification.unreadCount,
+    unreadList: state.Notification.unreadList,
+    userStatusList: state.Notification.userStatusList,
+    // users: () => {
+    //     let users = this.state.users;
+    //     let totalUnread = 0;
+    //     for (const i in users) {
+    //         for (const j in state.Notification.unreadList) {
+    //             if (users[i].id == state.Notification.unreadList[j].user) {
+    //                 users[i].unread = state.Notification.unreadList[j].unread;  
+    //                 totalUnread += parseInt(state.Notification.unreadList[j].unread);
+    //             }
+    //         }
+    //     }
+
+    //     for (const i in users) {
+    //         for (const j in state.Notification.userStatusList) {
+    //             if (users[i].id == state.Notification.userStatusList[j].user) {
+    //                 users[i].status = state.Notification.userStatusList[j].status;  
+    //             }
+    //         }
+    //     }
+    //     console.log(" == users = ", users);
+
+    //     return users
+    //     // this.props.setUnreadCount(totalUnread);
+    //     // this.setState({
+    //     //     users: users,
+    //     // });
+    // }
+})
+
+const mapDispatchtoProps = dispatch => ({
+    setUnreadCount: (count) => {
+        dispatch({
+            type: "UNREAD_SET",
+            payload: {
+                count: count,
+            }
+        })
+    },
+    
+    saveUnreadCount: (unreadList) => {
+        dispatch({
+            type: "UNREAD_SAVE",
+            payload: {
+                unreadList: unreadList,
+            }
+        })
+    },
+
+    saveUserStatus: (userStatusList) => {
+        dispatch({
+            type: "USER_STATUS_SAVE",
+            payload: {
+                userStatusList: userStatusList,
+            }
+        })
+    },
+
+    setTransmissible: (transmissible) => {
+        dispatch({
+            type: "SET_TRANSMISSIBLE",
+            payload: {
+                transmissible: transmissible,
+            }
+        })
+    },
+})
+
+export default connect(mapStatetoProps, mapDispatchtoProps)(ContactList);  

@@ -8,6 +8,7 @@ import '../../assets/css/chat-room.css';
 import { removeQuotes } from '../../assets/js/chatMain';
 import { connect } from "react-redux";
 import { Redirect } from 'react-router-dom';
+import { NonceProvider } from 'react-select';
 // import '../../assets/js/chatMain.js';
 // import '../../assets/css/font-awesome.min.css';
 
@@ -25,6 +26,9 @@ class ChatMain extends Component {
       user_2: '',
       side_two_left: '-100%',
       userUnread : [],
+      selectedUser: null,
+      senderId: -1,
+      newUser: null,
     };    
   }
 
@@ -62,9 +66,10 @@ class ChatMain extends Component {
           <div className="app-one msg m-3"> 
             
               <div key={1} className="col-sm-4 side msg">
-                <ChatList chats={this.state.chats} userUnread={this.state.userUnread} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
-                <ContactList className="msg" updateMainChat={chat => {
+                <ChatList chats={this.state.chats} userUnread={this.state.userUnread} newUser={this.state.newUser} selectedUser={this.state.selectedUser} updateMainChat={chat => this.setState({mainChat: chat})} updateUser={user => this.setState({user_2: user})} className="msg" updateSideTwoLeft={() => this.setState({side_two_left: this.state.side_two_left==="0"?"-100%":"0"})}/>
+                <ContactList className="msg" updateUser={user => this.setState({user_2: user})} senderId={this.state.senderId} updateMainChat={(chat, selectedUser) => {
                       this.setState({mainChat: chat});
+                      this.setState({selectedUser: selectedUser});
                       axios.get(window.location.protocol + '//' + window.location.hostname + `:${process.env.REACT_APP_PORT}/chats/`, {'headers': this.headers})
                         .then(response => {
                           this.setState({
@@ -74,11 +79,12 @@ class ChatMain extends Component {
                         .catch(error => console.log(error,5))
                     }
                   } 
+                  updateNewUser = {user => this.setState({newUser: user})}
                   side_two_left={ this.state.side_two_left }
                 />
               </div>
               {/* <Chat key={2} chat={this.state.mainChat}  className="msg" />, */}
-              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateUserUnread={(unreadList, sentTime) => {this.setState({userUnread: [unreadList, sentTime]})}} className="msg" />,
+              <Chat key={2} chat={this.state.mainChat} user={this.state.user_2}  updateSenderId={senderId => this.setState({senderId: senderId})}  updateUserUnread={(unreadList, sentTime) => {this.setState({userUnread: [unreadList, sentTime]})}} className="msg" />,
             </div>
         // </div>
         // </React.Fragment>

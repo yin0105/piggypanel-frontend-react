@@ -102,15 +102,18 @@ class Chat extends Component {
     
         websocket.onmessage = (evt) => {
             let data = JSON.parse(evt.data)
+            console.log("== data = ", data);
             if ('key' in data) {
                 // this.setState({
                 //     publicKey: forge.pki.publicKeyFromPem(data.key)
                 // });
 
             } else if ('message' in data && data.receiver.indexOf(`_${sessionStorage.getItem("authId")}_`) > -1) {
+                console.log("=== onMessage()");
                 let sender = data.receiver.split("_")[1];
                 let read_sender = -1;
                 const receiver = sessionStorage.getItem("authId");
+                console.log("receiver = ", receiver, ", sender = ", sender, ", this.props.user = ", this.props.user, ", authID = ", sessionStorage.getItem("authId"))
                 if (this.props.user == sender || sessionStorage.getItem("authId") == sender) {
                     let chat = this.state.chat;
                     let conversation = chat.messages;
@@ -121,6 +124,9 @@ class Chat extends Component {
                     // if (this.props.user == sender) {
                     //     read_sender = sender;
                     // }
+                } else if (data.receiver.indexOf("_" + sessionStorage.getItem("authId") + "_") > 0) {
+                    console.log("updateSenderId", sender);
+                    this.props.updateSenderId(sender);
                 }
 
                 axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${read_sender}&receiver=${receiver}`, {'headers': this.headers})

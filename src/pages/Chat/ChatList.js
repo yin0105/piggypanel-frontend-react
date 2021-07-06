@@ -30,9 +30,10 @@ class ChatList extends Component {
     ]
 
     componentDidMount() {
-        axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=${sessionStorage.getItem('authId')}`, {'headers': this.headers})
+        axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/users/?user=${sessionStorage.getItem('authId')}&chat`, {'headers': this.headers})
             .then(response => {
                 const newUsers = response.data //sessionStorage.getItem('access')==="agent"?[...this.groups.slice(0, 1), ...response.data]:[...this.groups, ...response.data];
+                console.log("chatlist - response : ", newUsers);
                 this.setState({users: newUsers});
                 this.updateUserListWithUnreadList(this.state.unreadList, this.props.userStatusList);
             })
@@ -44,6 +45,34 @@ class ChatList extends Component {
             this.setState({unreadList: nextProps.unreadList});
             this.setState({userStatusList: nextProps.userStatusList});
             this.updateUserListWithUnreadList(nextProps.unreadList, nextProps.userStatusList);
+        }
+
+        if (nextProps.selectedUser !== undefined && nextProps.selectedUser !== null) {
+            var is_exist = false;
+            this.state.users.map(user => {
+                if (is_exist) {return;}
+                if (user.id == nextProps.selectedUser.id) {
+                    is_exist = true;
+                    return;
+                }
+            })
+            if (!is_exist) {
+                this.setState({users: [...this.state.users, nextProps.selectedUser]})
+            }
+        }
+
+        if (nextProps.newUser !== undefined && nextProps.newUser !== null) {
+            var is_exist = false;
+            this.state.users.map(user => {
+                if (is_exist) {return;}
+                if (user.id == nextProps.newUser.id) {
+                    is_exist = true;
+                    return;
+                }
+            })
+            if (!is_exist) {
+                this.setState({users: [...this.state.users, nextProps.newUser]})
+            }
         }
     }
 
@@ -127,6 +156,7 @@ class ChatList extends Component {
 
                 <div className="compose-sideBar msg">
                     { users.map(user => {
+                        console.log("user: ", user.id, ", trans : ", user.transmissible);
                         const badge_style = user.status==="away"? "badge-status-away":(user.status==="off"? "badge-status-off": "");
                         let userStatusStye = { filter: `saturate(100%)` };
                         if (user.status == 'off') {
