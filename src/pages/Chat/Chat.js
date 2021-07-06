@@ -187,14 +187,49 @@ class Chat extends Component {
         $('#comment').val('');
     }
 
+    removeMsg = (id) => {
+        console.log("remove id = ", id);
+        axios.post(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/remove_msg/?id=${id}`, {'headers': this.headers})
+            .then(response => {
+                console.log(" == remove response : ", response.data);
+                let data = new URLSearchParams();
+                const receiver = this.props.user;
+                const sender = sessionStorage.getItem('authId');
+                data.append('receiver', receiver);
+                data.append('sender', sender);
+                this.props.setTransmissible(this.props.user.transmissible);
+                axios.post(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/create-chat/`, data, {'headers': this.headers})
+                    .then(response => { 
+                        this.setState({chat: response.data});
+                        console.log("chat : ", response.data);
+                        // this.props.updateUser(this.props.user.id)
+                        
+                        // axios.get(`${process.env.REACT_APP_API_URL}:${process.env.REACT_APP_PORT}/unread?sender=${receiver}&receiver=${sender}`, {'headers': this.headers})
+                        //     .then(response_2 => {
+                        //         this.props.saveUnreadCount(response_2.data.unread);
+                        //         this.props.saveUserStatus(response_2.data.user_status);
+                        //     })
+                        //     .catch(error => console.log(error))
+                    })
+                    .catch(error => console.log(error, 2));
+                // this.setState(response.data);
+                // response.data.map(user => {
+
+                // })
+                // this.props.saveUnreadCount(response.data.unread);
+                // this.props.saveUserStatus(response.data.user_status);
+            })
+            .catch(error => console.log(error))
+    }
+
     render() {
         const user = sessionStorage.getItem('authId');
-        const chat = this.props.chat;
+        const chat = this.state.chat.messages.length == 0 ? this.props.chat: this.state.chat;
         let messages = '';
         if (this.state.chat.id === 0) {
             return <div className="col-sm-8 conversation"></div>
         }
-        if (chat) {
+        if ( this.state.chat.messages.length > 0) {
             messages = chat.messages.map(message =>{ 
                 let diff_time = "";
                 if (message.date_sent != null) {
@@ -220,8 +255,11 @@ class Chat extends Component {
                 classType={message.sender.id != user ? 'receiver' : 'sender'} 
                 text={message.text} 
                 date_sent={diff_time} 
+                msgId={message.id}
+                removeMsg={id => this.removeMsg(id)}
             />});
         }
+        console.log("chat = ", chat);
 
         return (
             
@@ -235,7 +273,7 @@ class Chat extends Component {
                     <div className="col-sm-8 col-xs-7 heading-name msg">
                         <a className="heading-name-meta msg">
                             <span className="name-meta msg">
-                                {!chat ? '' : chat.users[0].id != sessionStorage.getItem('authId') ? chat.users[0].username : chat.users[1].username }
+                                {(chat == null || chat.users[1] == undefined) ? '' : chat.users[0].id != sessionStorage.getItem('authId') ? chat.users[0].username : chat.users[1].username }
                             </span>
                         </a>
                         <span className="heading-online msg">Online</span>
@@ -312,6 +350,15 @@ const mapDispatchtoProps = dispatch => ({
             type: "USER_STATUS_SAVE",
             payload: {
                 userStatusList: userStatusList,
+            }
+        })
+    },
+
+    setTransmissible: (transmissible) => {
+        dispatch({
+            type: "SET_TRANSMISSIBLE",
+            payload: {
+                transmissible: transmissible,
             }
         })
     },
