@@ -226,10 +226,10 @@ class Chat extends Component {
         const user = sessionStorage.getItem('authId');
         const chat = this.state.chat.messages.length == 0 ? this.props.chat: this.state.chat;
         let messages = '';
-        if (this.state.chat.id === 0) {
+        if ( chat == null || this.state.chat.id === 0) {
             return <div className="col-sm-8 conversation"></div>
         }
-        if ( this.state.chat.messages.length > 0) {
+        if ( chat.messages.length > 0) {
             messages = chat.messages.map(message =>{ 
                 let diff_time = "";
                 if (message.date_sent != null) {

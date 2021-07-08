@@ -42,7 +42,7 @@ class ChatMain extends Component {
       .then(response => {
         this.setState({
           chats: response.data,
-          mainChat: response.data[0]
+          mainChat: null,
         })
       })
       .catch(error => console.log(error,4));
