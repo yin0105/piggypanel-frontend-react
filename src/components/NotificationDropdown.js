@@ -21,6 +21,7 @@ class NotificationDropdown extends Component {
     }));
   }
   render() {
+    console.log("state.opened = ", this.state.opened);
     return (
       <React.Fragment>
         <Dropdown
@@ -53,7 +54,7 @@ class NotificationDropdown extends Component {
               </Row>
             </div> */}
 
-            { this.state.opened && <ChatMain/>}
+            <ChatMain/>
             <></>
 
             {/* <SimpleBar style={{ height: "230px" }}>
