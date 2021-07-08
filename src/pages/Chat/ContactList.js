@@ -120,7 +120,7 @@ class ContactList extends Component {
                             <div className="col-sm-9 col-xs-9 sideBar-main msg">
                                 <div className="row msg">
                                     <div className="col-sm-8 col-xs-8 sideBar-name msg">
-                                        <span className="name-meta msg">{user.username}</span>
+                                        <span className="name-meta msg">{user.first_name} { user.last_name }</span>
                                     </div>
                                     <div className="col-sm-4 col-xs-4 pull-right sideBar-time msg">
                                         <span className="time-meta pull-right msg">{user.last_login}</span>

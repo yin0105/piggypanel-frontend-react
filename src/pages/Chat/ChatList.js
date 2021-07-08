@@ -25,8 +25,8 @@ class ChatList extends Component {
     }
 
     groups = [
-        {"id": "@admin", "username": "@admin", "last_login": "", "unread": 0, "status": "on", },
-        {"id": "@agent", "username": "@agent", "last_login": "", "unread": 0, "status": "on", },
+        {"id": "@admin", "first_name": "@admin", "last_login": "", "unread": 0, "status": "on", },
+        {"id": "@agent", "first_name": "@agent", "last_login": "", "unread": 0, "status": "on", },
     ]
 
     componentDidMount() {
@@ -139,7 +139,7 @@ class ChatList extends Component {
                         <ChatStatusMenu updateUserStatus={userStatusList => this.setState(userStatusList)}/>
                     </div>
                     <div className="col-sm-6 col-xs-1 heading-name  msg">
-                        <a className="heading-name-meta msg">{removeQuotes(sessionStorage.getItem('username'))}</a>
+                        <a className="heading-name-meta msg">{removeQuotes(sessionStorage.getItem('authName'))}</a>
                     </div>                    
                     <div className="col-sm-2 col-xs-2 heading-compose  pull-right msg">
                         <i className="fa fa-comments fa-2x  pull-right msg" aria-hidden="true" onClick={() => {this.props.updateSideTwoLeft()}}></i>
@@ -197,7 +197,7 @@ class ChatList extends Component {
                             <div className="col-sm-8 sideBar-main msg">
                                 <div className="row msg">
                                     <div className="col-sm-8 col-xs-8 sideBar-name msg">
-                                        <span className="name-meta msg">{user.username}</span>
+                                        <span className="name-meta msg">{ user.first_name } { user.last_name }</span>
                                     </div>
                                     <div className="col-sm-4 col-xs-4 pull-right sideBar-time msg">
                                         <span className="time-meta pull-right msg">{user.last_login}</span>

@@ -273,7 +273,7 @@ class Chat extends Component {
                     <div className="col-sm-8 col-xs-7 heading-name msg">
                         <a className="heading-name-meta msg">
                             <span className="name-meta msg">
-                                {(chat == null || chat.users[1] == undefined) ? '' : chat.users[0].id != sessionStorage.getItem('authId') ? chat.users[0].username : chat.users[1].username }
+                                {(chat == null || chat.users[1] == undefined) ? '' : chat.users[0].id != sessionStorage.getItem('authId') ? chat.users[0].first_name + " " + chat.users[0].last_name: chat.users[1].first_name + " " + chat.users[1].last_name }
                             </span>
                         </a>
                         <span className="heading-online msg">Online</span>
